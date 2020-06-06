@@ -7,7 +7,6 @@
     state: started
   when: ansible_service_mgr != "systemd"
 
-
 - block:
   - name: detect unit file
     shell: |
@@ -16,7 +15,9 @@
 
   - name: enable and start syslog-ng
     service:
-      name: '{{_syslog_unit_file.stdout}}'
+      name: '{{ _syslog_unit_file.stdout }}'
       enabled: true
       state: started
+    when: _syslog_unit_file is defined and _syslog_unit_file.stdout is defined
+
   when: ansible_service_mgr == "systemd"

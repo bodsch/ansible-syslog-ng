@@ -16,7 +16,7 @@
     file:
       path: /var/log/journal
       state: absent
-    when: syslog_journald_wipe_persistent is defined and syslog_journald_wipe_persistent | bool == true
+    when: syslog_journald_wipe_persistent is defined and syslog_journald_wipe_persistent | bool
   when: (
     syslog_journald_config is defined and syslog_journald_config.items() | count != 0 or
-    syslog_journald_wipe_persistent is defined and syslog_journald_wipe_persistent | bool == true)
+    syslog_journald_wipe_persistent is defined and syslog_journald_wipe_persistent | bool)

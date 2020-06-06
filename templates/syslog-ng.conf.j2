@@ -1,4 +1,6 @@
-@version: {{syslog_config_version}}
+{% if syslog_config_version is defined %}
+@version: {{ syslog_config_version }}
+{% endif %}
 # {{ ansible_managed }}
 
 options {
@@ -25,75 +27,7 @@ options {
 # The custom template for file destinations.
 template tmpl { template("{{ syslog_default_template }}"); };
 
-################################################################################
-# SOURCES
-#
-
-{% for id in _default_sources.keys() | union(syslog_sources.keys()) %}
-source {{ id }} {
-{% for dic in _default_sources.get(id, []) + syslog_sources.get(id, []) %}
-
-{% if 'comment' in dic %}
-  # {{ dic.comment }}
-{% endif %}
-{% for k, v in dic.items() if k != 'comment' %}
-  {{ k | replace('_', '-') }}({{ '"%s"'|format(v) if v else '' }});
-{% endfor %}
-{% endfor %}
-};
-
-{% endfor %}
-
-################################################################################
-# DESTINATIONS
-#
-{% for log in syslog_logs %}
-{% if loop.first %}
-
-# HOST SPECIFIC DESTINATIONS
-{% endif %}
-destination d_{{ log.id }}     { file("/var/log/{{ log.file_name | default(log.id + '.log', true) }}" template(tmpl)); };
-{% endfor %}
-
-# COMMON DESTINATIONS
-{% if syslog_hardened %}
-destination d_grsec         { file("/var/log/grsec.log" template(tmpl)); };
-destination d_pax           { file("/var/log/pax.log" template(tmpl)); };
-{% endif %}
-destination d_console       { usertty("root"); };
-destination d_console_all   { file("/dev/tty12" template(tmpl)); };
-
-################################################################################
-# FILTERS
-#
-{% for log in syslog_logs %}
-{% if loop.first %}
-
-# HOST SPECIFIC FILTERS
-{% endif %}
-filter f_{{ log.id }}  { {{ log.filter |default('program(' + log.id + ')', true) }}; };
-{% endfor %}
-
-# COMMON FILTERS
-{% if syslog_hardened %}
-filter f_grsec              { message("^(\\[.*\..*\] |)grsec:.*"); };
-filter f_pax                { message("^(\\[.*\..*\] |)PAX:.*"); };
-{% endif %}
-
-################################################################################
-# LOGS
-#
-{% for log in syslog_logs %}
-{% if loop.first %}
-
-# HOST SPECIFIC LOGS
-{% endif %}
-log { source({{ log.source |default('src', true) }});  filter(f_{{ log.id }});  destination(d_{{ log.id }}); {% if log.final is defined %}flags(final); {% endif %}};
-{% endfor %}
-
-# COMMON LOGS
-{% if syslog_hardened %}
-log { source(kernsrc);  filter(f_pax);          destination(d_pax); };
-log { source(kernsrc);  filter(f_grsec);        destination(d_grsec); };
-{% endif %}
-log { source(src);                              destination(d_console_all); };
+@include "conf.d/sources.conf"
+@include "conf.d/destinations.conf"
+@include "conf.d/filters.conf"
+@include "conf.d/logs.conf"

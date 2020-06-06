@@ -1,0 +1,18 @@
+################################################################################
+# LOGS
+#
+
+{% for log in syslog_logs %}
+{% if loop.first %}
+
+# HOST SPECIFIC LOGS
+{% endif %}
+log { source({{ log.source | default('src', true) }});  filter(f_{{ log.id }});  destination(d_{{ log.id }}); {% if log.final is defined %}flags(final); {% endif %}};
+{% endfor %}
+
+# COMMON LOGS
+{% if syslog_hardened %}
+log { source(kernsrc);  filter(f_pax);          destination(d_pax); };
+log { source(kernsrc);  filter(f_grsec);        destination(d_grsec); };
+{% endif %}
+log { source(src);                              destination(d_console_all); };

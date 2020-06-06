@@ -1,5 +1,8 @@
 ---
-_default_sources:
+
+syslog_config_version: ''
+
+syslog_default_sources:
   src:
 #    - comment: standard Linux log source
 #      unix_stream: /dev/log

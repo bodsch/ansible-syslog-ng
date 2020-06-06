@@ -1,0 +1,17 @@
+################################################################################
+# FILTERS
+#
+
+{% for log in syslog_logs %}
+{% if loop.first %}
+
+# HOST SPECIFIC FILTERS
+{% endif %}
+filter f_{{ log.id }}  { {{ log.filter |default('program(' + log.id + ')', true) }}; };
+{% endfor %}
+
+# COMMON FILTERS
+{% if syslog_hardened %}
+filter f_grsec              { message("^(\\[.*\..*\] |)grsec:.*"); };
+filter f_pax                { message("^(\\[.*\..*\] |)PAX:.*"); };
+{% endif %}
