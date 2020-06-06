@@ -1,0 +1,12 @@
+---
+- name: install syslog-ng
+  apt:
+    name: '{{item}}'
+    state: present
+    install_recommends: no
+  loop:
+    - syslog-ng-core
+  when: ansible_os_family | lower == 'debian'
+
+
+

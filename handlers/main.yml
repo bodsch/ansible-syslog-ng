@@ -1,0 +1,15 @@
+---
+- name: reload syslog-ng
+  service:
+    name: syslog-ng
+    state: reloaded
+
+- name: restart syslog-ng
+  service:
+    name: syslog-ng
+    state: restarted
+
+- name: restart systemd-journald
+  service:
+    name: systemd-journald
+    state: restarted

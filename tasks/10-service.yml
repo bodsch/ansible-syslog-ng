@@ -1,0 +1,22 @@
+---
+
+- name: enable and start syslog-ng (no systemd)
+  service:
+    name: syslog-ng
+    enabled: true
+    state: started
+  when: ansible_service_mgr != "systemd"
+
+
+- block:
+  - name: detect unit file
+    shell: |
+      systemctl list-unit-files syslog-ng* | grep syslog-ng | awk -F' ' '{print $1}'
+    register: _syslog_unit_file
+
+  - name: enable and start syslog-ng
+    service:
+      name: '{{_syslog_unit_file.stdout}}'
+      enabled: true
+      state: started
+  when: ansible_service_mgr == "systemd"

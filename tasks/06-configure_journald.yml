@@ -1,0 +1,22 @@
+---
+
+- block:
+  - name: Create journald configuration
+    template:
+      src: journald.conf.j2
+      dest: /etc/systemd/journald.conf
+      mode: 0644
+      owner: root
+      group: root
+    when:
+      syslog_journald_config is defined and syslog_journald_config.items() | count != 0
+    notify: restart systemd-journald
+
+  - name: Wipe persistent journal directory
+    file:
+      path: /var/log/journal
+      state: absent
+    when: syslog_journald_wipe_persistent is defined and syslog_journald_wipe_persistent | bool == true
+  when: (
+    syslog_journald_config is defined and syslog_journald_config.items() | count != 0 or
+    syslog_journald_wipe_persistent is defined and syslog_journald_wipe_persistent | bool == true)

@@ -1,0 +1,20 @@
+---
+
+- name: detect config version
+  shell: |
+    syslog-ng --version | grep "Config version" | awk -F ': ' '{print $2}'
+  register: _syslog_config_version
+  tags:
+    configuration
+
+- name: set syslog config version
+  set_fact:
+    syslog_config_version: '{{_syslog_config_version.stdout}}'
+
+- name: configure syslog-ng.conf
+  template:
+    src: syslog-ng.conf.j2
+    dest: /etc/syslog-ng/syslog-ng.conf
+  notify: restart syslog-ng
+  tags:
+    configuration
