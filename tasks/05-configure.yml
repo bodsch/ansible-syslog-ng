@@ -2,8 +2,12 @@
 
 - name: merge syslog_sources configuration between defaults and custom
   set_fact:
-    syslog_sources: "{{ syslog_default_sources |
+    syslog_sources: "{{ syslog_sources_default |
       combine( syslog_sources, recursive=True ) }}"
+
+- name: merge syslog_logs configuration between defaults and custom
+  set_fact:
+    syslog_logs: "{{ syslog_logs_default + syslog_logs | flatten | unique }}"
 
 - name: detect config version
   shell: |
@@ -16,7 +20,9 @@
 - name: set syslog config version
   set_fact:
     syslog_config_version: '{{ _syslog_config_version.stdout }}'
-  when: _syslog_config_version is defined and _syslog_config_version.stdout is defined
+  when:
+    - _syslog_config_version is defined
+    - _syslog_config_version.stdout is defined
   tags:
     - syslog-ng
     - configuration

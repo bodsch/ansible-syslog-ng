@@ -1,13 +1,13 @@
-################################################################################
+# {{ ansible_managed }}
+
 # DESTINATIONS
-#
 
 {% for log in syslog_logs %}
 {% if loop.first %}
 
 # HOST SPECIFIC DESTINATIONS
 {% endif %}
-destination d_{{ log.id }}     { file("/var/log/{{ log.file_name | default(log.id + '.log', true) }}" template(tmpl)); };
+destination d_{{ "%-10s" | format(log.id) }}  { file("/var/log/{{ log.file_name | default(log.id + '.log', true) }}" template(tmpl)); };
 {% endfor %}
 
 # COMMON DESTINATIONS

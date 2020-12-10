@@ -1,12 +1,13 @@
-################################################################################
+# {{ ansible_managed }}
+
 # SOURCES
-#
 
 {% for id in syslog_sources.keys() %}
 source {{ id }} {
 {% for dic in syslog_sources.get(id, []) %}
-{% if 'comment' in dic %}
+{% if dic.comment is defined %}
   # {{ dic.comment }}
+  {% set _ = dic.pop('comment') %}
 {% endif %}
 {% for k, v in dic.items() if k != 'comment' %}
   {{ k | replace('_', '-') }}({{ '"%s"' | format(v) if v else '' }});

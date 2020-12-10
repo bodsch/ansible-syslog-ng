@@ -4,9 +4,27 @@ galaxy_info:
   company: bodo@boone-schulz.de
   description: Manage syslog-ng configuration
   license: Apache
-  min_ansible_version: 2.8
-  platforms: []
-  categories:
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        # 18.04
+        - bionic
+        # 20.04
+        - focal
+    - name: Debian
+      versions:
+        # 9
+        - etch
+        # 10
+        - buster
+    - name: EL
+      versions:
+        - 7
+        - 8
+  galaxy_tags:
     - system
+    - syslog
+
 
 dependencies: []
