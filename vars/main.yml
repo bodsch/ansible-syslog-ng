@@ -51,10 +51,15 @@ _syslog_package:
     - syslog-ng-core
   redhat:
     - syslog-ng
+  archlinux:
+    - syslog-ng
+  artixlinux:
+    - syslog-ng-openrc
 
 syslog_packages: "{{
           _syslog_package[ansible_os_family | lower~ '-' ~ ansible_distribution_major_version] |
   default(_syslog_package[ansible_os_family | lower] |
+  default(_syslog_package[ansible_os_family | lower | replace(' ', '') ] |
   default(_syslog_package[ansible_distribution | lower~ '-' ~ ansible_distribution_major_version] |
   default(_syslog_package[ansible_distribution | lower] |
-  default(_syslog_package['default'])))) }}"
+  default(_syslog_package['default']))))) }}"
