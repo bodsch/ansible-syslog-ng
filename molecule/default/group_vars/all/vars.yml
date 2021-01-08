@@ -1,0 +1,4 @@
+---
+syslog_logs:
+  - id: ansible
+    file_name: ansible.log

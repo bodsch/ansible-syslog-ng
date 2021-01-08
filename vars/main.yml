@@ -29,20 +29,27 @@ syslog_logs_default:
     file_name: warn.log
     filter: level(warn..alert)
   - id: emergency
-    file_name: emergency
+    file_name: emergency.log
     filter: level(emerg)
   - id: authlog
     file_name: auth.log
     filter: facility(auth, authpriv)
   - id: messages
-    file_name: messages
-    filter: level(info..alert) and not facility(auth, authpriv, mail, cron, kern) and not program (syslog-ng) and not facility(local7) and not ( program (dhcpcd) and level(debug..notice) )
+    file_name: messages.log
+    filter_linkage: and
+    filter:
+      - level(info..alert)
+      - level(debug..notice)
+      - not facility(auth, authpriv, mail, cron, kern, local7)
+      - not program (syslog-ng)
+      - not program (dhcpd)
+      - not program(named)
   - id: mail
     file_name: mail.log
     filter: facility(mail)
   - id: dhcpd
-    file_name: dhcp.log
-    filter: facility(local7)
+    file_name: dhcpd.log
+    # filter: program(dhcpd)
 
 _syslog_package:
   default:

@@ -6,8 +6,5 @@
   environment:
     NETRC: ''
 
-  vars:
-
-
   roles:
     - role: ansible-syslog-ng

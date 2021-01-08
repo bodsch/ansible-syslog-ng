@@ -7,7 +7,20 @@
 
 # HOST SPECIFIC FILTERS
 {% endif %}
-filter f_{{ "%-10s" | format(log.id) }}  { {{ log.filter | default('program(' + log.id + ')', true) }}; };
+
+{%- if log.filter is defined %}
+{% set var = log.filter %}
+{% if var is string %}
+{% set filter = var %}
+{% elif var is iterable and (var is not string and var is not mapping) %}
+{# TODO: use filter_linkage as linker #}
+{% set filter = var | join(' and ') %}
+{% endif %}
+{% else %}
+{% set filter = 'program(' + log.id + ')' %}
+{% endif -%}
+
+filter f_{{ "%-10s" | format(log.id) }}  { {{ filter }}; };
 {% endfor %}
 
 # COMMON FILTERS
