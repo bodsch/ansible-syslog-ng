@@ -17,7 +17,7 @@ syslog_logs_default:
     filter: facility(cron)
   - id: kern
     source: kernsrc
-    filepath: kern.log
+    filepath: kernel.log
     filter: facility(kern)
   - id: syslog
     filepath: syslog.log

@@ -32,14 +32,14 @@ syslog_options_group: 'adm'
 #
 # ...and configuration for logrotate.
 #
-syslog_logs:
-  - id: iptables
-    source: kernsrc
-    filepath: iptables.log
-    filter: message("^(\\[.*\..*\] |)ip6?tables.*")
-    final: true
-  - id: ansible
-    filepath: ansible.log
+syslog_logs: []
+#   - id: iptables
+#     source: kernsrc
+#     filepath: iptables.log
+#     filter: message("^(\\[.*\..*\] |)ip6?tables.*")
+#     final: true
+#   - id: ansible
+#     filepath: ansible.log
 
 # TODO
 # support remote host like this:

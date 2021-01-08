@@ -22,6 +22,9 @@ galaxy_info:
       versions:
         - 7
         - 8
+    - name: ArchLinux
+    - name: ArtixLinux
+
   galaxy_tags:
     - system
     - syslog
