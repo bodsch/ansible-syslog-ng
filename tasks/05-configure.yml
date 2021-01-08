@@ -11,7 +11,7 @@
 
 - name: detect config version
   shell: |
-    syslog-ng --version | grep "Config version" | awk -F ': ' '{print $2}'
+    syslog-ng --version 2> /dev/null | grep "Config version" | awk -F ': ' '{print $2}'
   register: _syslog_config_version
   tags:
     - syslog-ng

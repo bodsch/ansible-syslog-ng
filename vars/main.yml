@@ -13,35 +13,35 @@ syslog_sources_default:
 syslog_logs_default:
   - id: cron
     source: src
-    filepath: cron.log
+    file_name: cron.log
     filter: facility(cron)
   - id: kern
     source: kernsrc
-    filepath: kernel.log
+    file_name: kernel.log
     filter: facility(kern)
   - id: syslog
-    filepath: syslog.log
+    file_name: syslog.log
     filter: not facility(authpriv)
   - id: user
-    filepath: user.log
+    file_name: user.log
     filter: facility(user)
   - id: warn
-    filepath: warn.log
+    file_name: warn.log
     filter: level(warn..alert)
   - id: emergency
-    filepath: emergency
+    file_name: emergency
     filter: level(emerg)
   - id: authlog
-    filepath: auth.log
+    file_name: auth.log
     filter: facility(auth, authpriv)
   - id: messages
-    filepath: messages
+    file_name: messages
     filter: level(info..alert) and not facility(auth, authpriv, mail, cron, kern) and not program (syslog-ng) and not facility(local7) and not ( program (dhcpcd) and level(debug..notice) )
   - id: mail
-    filepath: mail.log
+    file_name: mail.log
     filter: facility(mail)
   - id: dhcpd
-    filepath: dhcp.log
+    file_name: dhcp.log
     filter: facility(local7)
 
 _syslog_package:

@@ -7,7 +7,7 @@ syslog_options_group: 'adm'
 #
 # - id:       unique identifier (required)
 #   source:   source of logging messages - 'src', or 'kernsrc'; default is 'src'
-#   filepath: log file path relative to /var/log/; default is '${id}.log'
+#   file_name: log file relative to /var/log/; default is '${id}.log'
 #   filter:   filter expression; default is 'program(${id})'
 #   final:    whether set a final flag; default is false
 #   delete_after_days: how many days to keep old logs (lograte); default is forever
@@ -17,7 +17,7 @@ syslog_options_group: 'adm'
 #     - id: dhcpd
 #     - id: vsftpd_warn
 #       source: src
-#       filepath: ftp/vsftpd.warn.log
+#       file_name: ftp/vsftpd.warn.log
 #       filter: program(vsftpd) and level(warn..crit)
 #       final: true
 #       delete_after_days: 365
@@ -35,11 +35,11 @@ syslog_options_group: 'adm'
 syslog_logs: []
 #   - id: iptables
 #     source: kernsrc
-#     filepath: iptables.log
+#     file_name: iptables.log
 #     filter: message("^(\\[.*\..*\] |)ip6?tables.*")
 #     final: true
 #   - id: ansible
-#     filepath: ansible.log
+#     file_name: ansible.log
 
 # TODO
 # support remote host like this:
