@@ -1,5 +1,17 @@
 ---
 
+- name: check configuration  # noqa 301
+  shell: >
+    syslog-ng --syntax-only
+  register: syslog_validate_config
+
+- name: validated config
+  debug:
+    var: syslog_validate_config.stdout
+  when:
+    - syslog_validate_config is defined
+    - syslog_validate_config.failed
+
 - name: enable and start syslog-ng (no systemd)
   service:
     name: syslog-ng

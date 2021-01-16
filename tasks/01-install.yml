@@ -4,6 +4,3 @@
   package:
     name: "{{ syslog_packages }}"
     state: present
-    # install_recommends: false
-
-#  when: ansible_os_family | lower == 'debian'
