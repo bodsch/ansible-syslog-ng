@@ -17,12 +17,51 @@
     - syslog-ng
     - configuration
 
+- name: detect config version
+  shell: |
+    syslog-ng --version 2> /dev/null | head -n1  | awk -F ' ' '{print $2}' | cut -c1-3
+  register: _syslog_config_version
+  tags:
+    - syslog-ng
+    - configuration
+  when:
+    - _syslog_config_version is defined
+    - _syslog_config_version.stdout is defined
+    - _syslog_config_version.stdout | length == 0
+
+- name: assert syslog_config_version
+  assert:
+    that: _syslog_config_version | length != 0
+    msg: "I can't found an valid syslog-ng version :("
+
 - name: set syslog config version
   set_fact:
     syslog_config_version: '{{ _syslog_config_version.stdout }}'
   when:
     - _syslog_config_version is defined
     - _syslog_config_version.stdout is defined
+  tags:
+    - syslog-ng
+    - configuration
+
+# get file or directory stats
+- name: 'stat /etc/syslog-ng/scl.conf'
+  stat:
+    path: /etc/syslog-ng/scl.conf
+    get_checksum: false
+    get_md5: false
+    get_mime: false
+    get_attributes: false
+  register: __stat_present_scl_conf
+  changed_when: not __stat_present_scl_conf.stat.exists
+
+- name: set syslog-ng scl.conf
+  set_fact:
+    syslog_scl: '{{ __stat_present_scl_conf.stat.path }}'
+  when:
+    - __stat_present_scl_conf is defined
+    - __stat_present_scl_conf.stat is defined
+    - __stat_present_scl_conf.stat.path is defined
   tags:
     - syslog-ng
     - configuration
@@ -45,6 +84,7 @@
   template:
     src: syslog-ng.conf.j2
     dest: /etc/syslog-ng/syslog-ng.conf
+    backup: true
   notify: restart syslog-ng
   tags:
     - syslog-ng

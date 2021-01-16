@@ -1,6 +1,9 @@
 @version: {{ syslog_config_version }}
-
 # {{ ansible_managed }}
+
+{% if syslog_scl is defined %}
+@include "{{ syslog_scl }}"
+{% endif %}
 
 options {
   stats_freq (0);
