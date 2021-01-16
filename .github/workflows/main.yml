@@ -1,0 +1,87 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 2 * * 0"
+
+defaults:
+  run:
+    working-directory: 'ansible-syslog-ng'
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'ansible-syslog-ng'
+
+      - name: set up python.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: install test dependencies.
+        run: pip install -r test-requirements.txt
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint
+
+  molecule:
+    name: Molecule
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro:
+          - debian9
+          - debian10
+          # - ubuntu1804
+          # - ubuntu2004
+          - centos8
+        python-version:
+          - '3.7'
+          - '3.8'
+          - '3.9'
+        ansible-version:
+          - '2.8'
+          - '2.9'
+          - '2.10'
+
+    steps:
+      - name: check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'ansible-syslog-ng'
+
+      - name: set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: install test dependencies.
+        run: pip install -r test-requirements.txt
+
+      - name: test with tox
+        run: |
+          tox --listenvs
+          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule converge
+          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule verify
+          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule destroy
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
