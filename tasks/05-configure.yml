@@ -25,17 +25,6 @@
     - _syslog_config_version.stdout is defined
     - _syslog_config_version.stdout | int != 0
 
-# - debug:
-#     var: "{{ item }}"
-#   when: item is defined
-#   loop:
-#     - syslog_config_version | int
-#     - syslog_config_version | length
-#     - _syslog_config_version
-#     - not _syslog_config_version.stdout is defined
-#     # - _syslog_config_version.stdout | length == 0
-#     # - not _syslog_config_version.stdout is defined or _syslog_config_version.stdout | length == 0
-
 - block:
     - name: detect config version
       shell: |
@@ -44,13 +33,6 @@
       tags:
         - syslog-ng
         - configuration
-
-#     - debug:
-#         var: "{{ item }}"
-#       when: item is defined
-#       loop:
-#         - _syslog_config_version
-#         - not _syslog_config_version.stdout is defined or _syslog_config_version.stdout | length == 0
 
     - name: set syslog config version
       set_fact:
@@ -64,16 +46,6 @@
   when:
     - syslog_config_version is defined
     - syslog_config_version | length == 0
-
-- debug:
-    var: "{{ item }}"
-  when: item is defined
-  loop:
-    - syslog_config_version | int
-    - syslog_config_version | length
-    - _syslog_config_version
-    - not _syslog_config_version.stdout is defined
-
 
 - name: assert syslog_config_version
   assert:
