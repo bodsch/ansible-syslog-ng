@@ -44,24 +44,29 @@
     - syslog-ng
     - configuration
 
-# get file or directory stats
-- name: 'stat /etc/syslog-ng/scl.conf'
-  stat:
-    path: /etc/syslog-ng/scl.conf
-    get_checksum: false
-    get_md5: false
-    get_mime: false
-    get_attributes: false
-  register: __stat_present_scl_conf
-  changed_when: not __stat_present_scl_conf.stat.exists
+- name: debian 9 support
+  block:
+    # get file or directory stats
+    - name: 'stat /etc/syslog-ng/scl.conf'
+      stat:
+        path: /etc/syslog-ng/scl.conf
+        get_checksum: false
+        get_md5: false
+        get_mime: false
+        get_attributes: false
+      register: __stat_present_scl_conf
+      changed_when: not __stat_present_scl_conf.stat.exists
 
-- name: set syslog-ng scl.conf
-  set_fact:
-    syslog_scl: '{{ __stat_present_scl_conf.stat.path }}'
+    - name: set syslog-ng scl.conf
+      set_fact:
+        syslog_scl: '{{ __stat_present_scl_conf.stat.path }}'
+      when:
+        - __stat_present_scl_conf is defined
+        - __stat_present_scl_conf.stat is defined
+        - __stat_present_scl_conf.stat.path is defined
   when:
-    - __stat_present_scl_conf is defined
-    - __stat_present_scl_conf.stat is defined
-    - __stat_present_scl_conf.stat.path is defined
+    - ansible_distribution | lower == 'debian'
+    - ansible_distribution_major_version | int < 10
   tags:
     - syslog-ng
     - configuration
