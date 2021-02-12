@@ -35,10 +35,10 @@ jobs:
 
       - name: YAMLlint
         run: yamllint .
-      - name: ansible-lint
-        run: ansible-lint .
-      - name: flake8
-        run: flake8 .
+      # - name: ansible-lint
+      #   run: ansible-lint .
+      # - name: flake8
+      #   run: flake8 .
 
   test:
     name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
