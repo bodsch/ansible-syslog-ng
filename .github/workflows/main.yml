@@ -33,11 +33,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible ansible-lint yamllint flake8
 
-      - name: Lint code.
-        run: |
-          yamllint .
-          ansible-lint .
-          flake8 .
+      - name: YAMLlint
+        run: yamllint .
+      - name: ansible-lint
+        run: ansible-lint .
+      - name: flake8
+        run: flake8 .
 
   test:
     name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
