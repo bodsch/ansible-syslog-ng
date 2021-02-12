@@ -28,8 +28,10 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: install test dependencies.
-        run: pip install -r test-requirements.txt
+      - name: install dependencies.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible ansible-lint yamllint flake8
 
       - name: Lint code.
         run: |
