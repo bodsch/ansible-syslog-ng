@@ -16,7 +16,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v2
@@ -34,20 +34,24 @@ jobs:
       - name: Lint code.
         run: |
           yamllint .
-          ansible-lint
+          ansible-lint .
+          flake8 .
 
-  molecule:
-    name: Molecule
-    runs-on: ubuntu-latest
+  test:
+    name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
+    needs:
+      - lint
+    runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
-        distro:
-          - debian9
-          - debian10
+        image:
+          - debian:9
+          - debian:10
           # - ubuntu1804
           # - ubuntu2004
-          - centos8
+          - centos:8
+          - oraclelinux:8
         python-version:
           - '3.7'
           - '3.8'
@@ -71,17 +75,23 @@ jobs:
       - name: install dependencies
         run: |
           python -m pip install --upgrade pip
-
-      - name: install test dependencies.
-        run: pip install -r test-requirements.txt
+          pip install -r test-requirements.txt
 
       - name: test with tox
         run: |
-          tox --listenvs
-          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule converge
-          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule verify
-          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule destroy
+          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule test
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
+
+  publish:
+    if: github.ref == 'refs/heads/master'
+    needs:
+      - test
+    runs-on: ubuntu-18.04
+    steps:
+      - name: galaxy
+        uses: robertdebock/galaxy-action@1.1.0
+        with:
+          galaxy_api_key: ${{ secrets.galaxy_api_key }}
