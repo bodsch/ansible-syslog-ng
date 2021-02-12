@@ -1,6 +1,6 @@
 ---
 
-- name: check configuration
+- name: check configuration  # noqa no-changed-when
   shell: >
     syslog-ng --syntax-only
   register: syslog_validate_config
@@ -20,7 +20,7 @@
   when: ansible_service_mgr != "systemd"
 
 - block:
-    - name: detect unit file
+    - name: detect unit file  # noqa command-instead-of-module
       shell: |
         systemctl list-unit-files syslog-ng* | grep syslog-ng | awk -F' ' '{print $1}'
       register: _syslog_unit_file
