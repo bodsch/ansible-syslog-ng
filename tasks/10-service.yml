@@ -1,6 +1,6 @@
 ---
 
-- name: check configuration  # noqa 301
+- name: check configuration
   shell: >
     syslog-ng --syntax-only
   register: syslog_validate_config
