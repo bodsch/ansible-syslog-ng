@@ -1,12 +1,16 @@
 ---
 
-- include_tasks: 01-install.yml
+- include_tasks: prepare.yml
 
-- include_tasks: 05-configure.yml
+- include_tasks: install.yml
 
-- include_tasks: 06-configure_journald.yml
+- include_tasks: configure.yml
+
+- include_tasks: configure_journald.yml
   when:
     - ansible_service_mgr is defined
     - ansible_service_mgr | lower == "systemd"
 
-- include_tasks: 10-service.yml
+- include_tasks: facts.yml
+
+- include_tasks: service.yml

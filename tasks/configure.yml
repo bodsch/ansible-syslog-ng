@@ -9,43 +9,19 @@
   set_fact:
     syslog_logs: "{{ syslog_logs_default + syslog_logs | flatten | unique }}"
 
-- name: detect config version   # noqa no-changed-when risky-shell-pipe
-  shell: |
-    syslog-ng --version 2> /dev/null | grep "Config version" | awk -F ': ' '{print $2}'
+- name: detect config version
+  syslog_cmd:
+    parameters:
+      - --version
   register: _syslog_config_version
-  tags:
-    - syslog-ng
-    - configuration
 
 - name: set syslog config version
   set_fact:
-    syslog_config_version: '{{ _syslog_config_version.stdout }}'
+    syslog_config_version: '{{ _syslog_config_version.version }}'
   when:
     - _syslog_config_version is defined
-    - _syslog_config_version.stdout is defined
-    - _syslog_config_version.stdout | int != 0
-
-- block:
-    - name: detect config version  # noqa command-instead-of-module
-      shell: |
-        syslog-ng --version 2> /dev/null | head -n1  | awk -F ' ' '{print $2}' | cut -c1-3
-      register: _syslog_config_version
-      tags:
-        - syslog-ng
-        - configuration
-
-    - name: set syslog config version
-      set_fact:
-        syslog_config_version: '{{ _syslog_config_version.stdout }}'
-      when:
-        - _syslog_config_version is defined
-        - _syslog_config_version.stdout is defined
-      tags:
-        - syslog-ng
-        - configuration
-  when:
-    - syslog_config_version is defined
-    - syslog_config_version | length == 0
+    - _syslog_config_version.version is defined
+    - _syslog_config_version.version | int != 0
 
 - name: assert syslog_config_version
   assert:
@@ -78,6 +54,12 @@
   tags:
     - syslog-ng
     - configuration
+
+- name: create /etc/syslog-ng/conf.d
+  file:
+    name: /etc/syslog-ng/conf.d
+    state: directory
+    mode: 0750
 
 - name: write splittet configuration files
   template:
