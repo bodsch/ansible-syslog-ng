@@ -15,7 +15,7 @@
     - ansible_service_mgr != "systemd"
 
 - block:
-    - name:
+    - name: populate service facts
       service_facts:
       register: systemd_facts
 

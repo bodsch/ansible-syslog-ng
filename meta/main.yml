@@ -1,7 +1,6 @@
 ---
 galaxy_info:
   author: Bodo Schulz
-  company: bodo@boone-schulz.de
   description: Manage syslog-ng configuration
   license: Apache
   min_ansible_version: 2.9
