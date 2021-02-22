@@ -50,6 +50,7 @@ jobs:
       fail-fast: false
       matrix:
         image:
+          - archlinux:latest
           - debian:9
           - debian:10
           # - ubuntu1804

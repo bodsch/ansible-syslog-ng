@@ -2,6 +2,8 @@
 
 syslog_options_group: 'adm'
 
+syslog_systemd_template: default
+
 # A list of hashes that defines a trio of file destination, filter, log and
 # also a lograte; a simplified configuration that is sufficient for most cases.
 #

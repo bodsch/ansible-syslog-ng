@@ -20,8 +20,8 @@
       when:
         - syslog_journald.wipe_persistent is defined
         - syslog_journald.wipe_persistent | bool
-  when: (
-     syslog_journald.config is defined and
-     syslog_journald.config.items() | count != 0) or
-    (syslog_journald.wipe_persistent is defined and
-     syslog_journald.wipe_persistent | bool)
+  when:
+    - (syslog_journald.config is defined and
+       syslog_journald.config.items() | count != 0) or
+      (syslog_journald.wipe_persistent is defined and
+       syslog_journald.wipe_persistent | bool)
