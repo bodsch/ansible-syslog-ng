@@ -59,8 +59,8 @@ jobs:
           - archlinux:latest
           - debian:9
           - debian:10
-          # - ubuntu1804
-          # - ubuntu2004
+          - ubuntu:18.04
+          - ubuntu:20.04
           - centos:8
           - oraclelinux:8
         python-version:
@@ -93,7 +93,7 @@ jobs:
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
-          MOLECULE_DISTRO: ${{ matrix.distro }}
+          MOLECULE_DISTRIBUTION: ${{ matrix.image }}
 
   publish:
     if: github.ref == 'refs/heads/master'
