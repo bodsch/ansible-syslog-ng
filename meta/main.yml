@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: syslog_ng
   author: Bodo Schulz
   description: Manage syslog-ng configuration
   license: Apache
