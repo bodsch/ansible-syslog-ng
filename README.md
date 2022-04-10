@@ -19,11 +19,17 @@ This again allows a simple, central logging service to be run on the user's own 
 
 ## tested operating systems
 
-* Debian 9 / 10
-* Ubuntu 18.04 / 20.04
-* CentOS 8
-* Oracle Linux 8
-* Arch Linux
+Tested on
+
+* ArchLinux
+* ArtixLinux
+* Debian based
+    - Debian 10 / 11
+    - Ubuntu 20.04
+* RedHat based
+    - Alma Linux 8
+    - Rocky Linux 8
+    - OracleLinux 8
 
 ## usage
 
