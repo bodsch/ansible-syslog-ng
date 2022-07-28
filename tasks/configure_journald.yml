@@ -1,7 +1,7 @@
 ---
 
 - block:
-    - name: Create journald configuration
+    - name: create journald configuration
       template:
         src: journald.conf.j2
         dest: /etc/systemd/journald.conf
@@ -13,7 +13,7 @@
         - syslog_journald.config.items() | count != 0
       notify: restart systemd-journald
 
-    - name: Wipe persistent journal directory
+    - name: wipe persistent journal directory
       file:
         path: /var/log/journal
         state: absent
