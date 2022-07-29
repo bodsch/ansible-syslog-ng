@@ -1,12 +1,13 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
 
 # DESTINATIONS
 
 {% for log in syslog_logs %}
-{% if loop.first %}
+  {% if loop.first %}
 
 # HOST SPECIFIC DESTINATIONS
-{% endif %}
+  {% endif %}
 destination d_{{ "%-10s" | format(log.id) }}  { file("/var/log/{{ log.file_name | default(log.id + '.log', true) }}" template(tmpl)); };
 {% endfor %}
 

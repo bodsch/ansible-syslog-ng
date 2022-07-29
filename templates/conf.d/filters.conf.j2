@@ -1,24 +1,26 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
 
 # FILTERS
 
 {% for log in syslog_logs %}
-{% if loop.first %}
+  {% if loop.first %}
 
 # HOST SPECIFIC FILTERS
-{% endif %}
+  {% endif %}
 
-{%- if log.filter is defined %}
-{% set var = log.filter %}
-{% if var is string %}
-{% set filter = var %}
-{% elif var is iterable and (var is not string and var is not mapping) %}
+  {% if log.filter is defined %}
+    {% set var = log.filter %}
+    {% if var is string %}
+      {% set filter = var %}
+    {% elif var is iterable and
+            (var is not string and var is not mapping) %}
 {# TODO: use filter_linkage as linker #}
-{% set filter = var | join(' and ') %}
-{% endif %}
-{% else %}
-{% set filter = 'program(' + log.id + ')' %}
-{% endif -%}
+      {% set filter = var | join(' and ') %}
+    {% endif %}
+  {% else %}
+    {% set filter = 'program(' + log.id + ')' %}
+  {% endif -%}
 
 filter f_{{ "%-10s" | format(log.id) }}  { {{ filter }}; };
 {% endfor %}

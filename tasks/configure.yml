@@ -1,14 +1,5 @@
 ---
 
-# - name: merge syslog_sources configuration between defaults and custom
-#   set_fact:
-#     syslog_sources: "{{ syslog_sources_default |
-#       combine( syslog_sources, recursive=True ) }}"
-#
-# - name: merge syslog_logs configuration between defaults and custom
-#   set_fact:
-#     syslog_logs: "{{ syslog_logs_default + syslog_logs | flatten | unique }}"
-
 - name: detect config version
   syslog_cmd:
     parameters:
@@ -27,33 +18,6 @@
   assert:
     that: syslog_config_version | length != 0
     msg: "I can't found an valid syslog-ng version :("
-
-# - name: debian 9 support
-#   block:
-#     # get file or directory stats
-#     - name: 'stat /etc/syslog-ng/scl.conf'
-#       stat:
-#         path: /etc/syslog-ng/scl.conf
-#         get_checksum: false
-#         get_md5: false
-#         get_mime: false
-#         get_attributes: false
-#       register: __stat_present_scl_conf
-#       changed_when: not __stat_present_scl_conf.stat.exists
-#
-#     - name: set syslog-ng scl.conf
-#       set_fact:
-#         syslog_scl: '{{ __stat_present_scl_conf.stat.path }}'
-#       when:
-#         - __stat_present_scl_conf is defined
-#         - __stat_present_scl_conf.stat is defined
-#         - __stat_present_scl_conf.stat.path is defined
-#   when:
-#     - ansible_distribution | lower == 'debian'
-#     - ansible_distribution_major_version | int < 10
-#   tags:
-#     - syslog-ng
-#     - configuration
 
 - name: create /etc/syslog-ng/conf.d
   file:
