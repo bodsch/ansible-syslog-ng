@@ -1,42 +1,33 @@
 ---
 
-- name: update cache
-  pacman:
+- name: include OS specific configuration ({{ ansible_distribution }} ({{ ansible_os_family }}) {{ ansible_distribution_major_version }})
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        # eg. debian-10 / ubuntu-20.04 / centos-8 / oraclelinux-8
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+        # eg. archlinux-systemd / archlinux-openrc
+        - "{{ ansible_distribution | lower }}-{{ ansible_service_mgr | lower }}.yml"
+        # eg. debian / ubuntu / centos / oraclelinux
+        - "{{ ansible_distribution | lower }}.yml"
+        # eg. redhat / debian / archlinux
+        - "{{ ansible_os_family | lower }}.yml"
+        - default.yaml
+      skip: true
+
+- name: update package cache
+  package:
     update_cache: true
-    update_cache_extra_args: --noconfirm
+
+- name: install requirements
+  package:
+    name: "{{ syslog_dependencies }}"
+    state: present
   when:
-    - ansible_os_family | lower == 'archlinux' or
-      ansible_os_family | lower == 'artixlinux'
-
-- name: update apt cache
-  apt:
-    update_cache: true
-  when: ansible_os_family | lower == 'debian'
-
-- block:
-    - name: Import EPEL GPG key.
-      rpm_key:
-        key: https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
-        state: present
-
-    - name: install EPEL repository
-      yum_repository:
-        name: epel
-        state: present
-        description: Extra Packages for Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
-        baseurl: http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/$basearch
-        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
-        metalink: https://mirrors.fedoraproject.org/metalink?repo=epel-{{ ansible_distribution_major_version }}&arch=$basearch&infra=$infra&content=$contentdir
-        failovermethod: priority
-        gpgcheck: 1
-        enabled: 1
-
-    # - name: update rpm cache  # noqa 'command-instead-of-module'
-    #   command: yum clean metadata
-    #   args:
-    #     warn: false
-  when:
-    - ansible_os_family | lower in ['redhat', 'rocky']
+    - syslog_dependencies | default([]) | count > 0
 
 - name: create ansible local facts directory
   file:
@@ -45,3 +36,9 @@
     owner: root
     group: root
     mode: 0775
+
+- name: merge syslog configuration between defaults and custom
+  set_fact:
+    syslog_sources: "{{ syslog_defaults_sources |
+      combine( syslog_sources, recursive=True ) }}"
+    syslog_logs: "{{ syslog_defaults_logs + syslog_logs | flatten | unique }}"

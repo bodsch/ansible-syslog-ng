@@ -26,10 +26,6 @@ Tested on
 * Debian based
     - Debian 10 / 11
     - Ubuntu 20.04
-* RedHat based
-    - Alma Linux 8
-    - Rocky Linux 8
-    - OracleLinux 8
 
 ## usage
 
@@ -42,6 +38,9 @@ syslog_default_template: '${YEAR}-${MONTH}-${DAY}T${HOUR}:${MIN}:${SEC} ${LEVEL}
 # Should be added logs for grsecurity and PAX?
 syslog_hardened: false
 
+syslog_server:
+  log_destination: /var/log/remote
+
 syslog_journald:
   wipe_persistent: true
   config:
@@ -51,25 +50,24 @@ syslog_journald:
 
 ### define logfiles
 
-Additional log destinations to be merged with the [default](./vars/main.yml) (`syslog_logs_default`)  ones.
+Additional log destinations to be merged with the [default](./vars/main.yml) (`syslog_defaults_logs`)  ones.
 
 `syslog_logs`
 
-A list of hashes that defines a trio of file destination, filter, log and
-also a lograte.
-a simplified configuration that is sufficient for most cases.
+A list of hashes, a trio of file destination, filter, log and - optionally - also a greatly simplified logrotate rule.
+A simplified configuration that should be sufficient for most cases.
 
-```yaml
-syslog_logs:
-  - id:                  unique identifier (required)
-    source:              source of logging messages - 'src', or 'kernsrc'; default is 'src'
-    file_name:           log file relative to /var/log/; default is '${id}.log'
-    filter:              filter expression; default is 'program(${id})'
-    final:               whether set a final flag; default is false
-    delete_after_days:   how many days to keep old logs (lograte); default is forever
-```
+| parameter           | required | default          | description                                      |
+| :----               | :----    | :----            | :-----                                           |
+| `id`                | `true`   | `-`              | unique identifier                                |
+| `source`            | `false`  | `src`            | source of logging messages - 'src', or 'kernsrc' |
+| `file_name`         | `false`  | `${id}.log`      | log file relative to `/var/log`                  |
+| `filter`            | `false`  | `program(${id})` | filter expression                                |
+| `final`             | `false`  | `false`          | whether set a final flag                         |
+| `delete_after_days` | `false`  | `forever`        | how many days to keep old logs for logrotate     |
 
-**Example:**
+
+#### Example
 
 ```yaml
 syslog_logs:
@@ -79,6 +77,9 @@ syslog_logs:
     filter: message("^(\\[.*\..*\] |)ip6?tables.*")
     final: true
     delete_after_days: 365
+  - id: remote
+    source: net
+    file_name: "remote/${FULLHOST}"
 ```
 
 This will produce:
@@ -97,18 +98,16 @@ support remote host like this:
 
 ### define of sources
 
-Additional log sources to be merged with the [default](./vars/main.yml) (`syslog_sources_default`) ones.
+Additional log sources to be merged with the [default](./vars/main.yml) (`syslog_defaults_sources`) ones.
 
-```yaml
-syslog_sources:
-  src:              (unique identifier of the source (typically just 'src'))
-    - comment:      an optional comment
-      internal:     key is name of the source driver, typically unix_stream or file
-                    (underscores are replaced with hyphens)
-                    value is the driver parameter
-```
 
-**Example**
+| parameter           | description           |
+| :----               | :-----                |
+| `comment`           | an optional comment   |
+| `$driver`           | key is name of the source driver, typically `unix_stream` or `file`<br>(underscores are replaced with hyphens)<br>value is the driver parameter |
+
+
+#### Example
 
 ```yaml
 syslog_sources:
@@ -118,20 +117,29 @@ syslog_sources:
   kernsrc:
     - comment: messages from the kernel
       file: /proc/kmsg
+  net:
+    - comment: messages from syslog-clients
+      udp:
 ```
 
-## Tests
+## Contribution
 
-Tests can be performed with `molecule` and `tox`.
-`tox` supports here with a test matrix, so that different Ansible versions can be used.
+Please read [Contribution](CONTRIBUTING.md)
 
-see also [Actions](https://github.com/bodsch/ansible-syslog-ng/actions)
+## Development,  Branches (Git Tags)
 
-```bash
-tox -e py39-ansible210 -- molecule test
-```
+The `master` Branch is my *Working Horse* includes the "latest, hot shit" and can be complete broken!
+
+If you want to use something stable, please use a [Tagged Version](https://github.com/bodsch/ansible-syslog-ng/tags)!
+
+---
+
+## Author and License
+
+- Bodo Schulz
 
 ## License
 
 [Apache](LICENSE)
 
+**FREE SOFTWARE, HELL YEAH!**

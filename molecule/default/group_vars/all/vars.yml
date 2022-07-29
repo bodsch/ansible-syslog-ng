@@ -1,4 +1,13 @@
 ---
+
 syslog_logs:
   - id: ansible
     file_name: ansible.log
+  - id: remote
+    source: net
+    file_name: "remote/${FULLHOST}"
+
+syslog_sources:
+  net:
+    - comment: network
+      udp:

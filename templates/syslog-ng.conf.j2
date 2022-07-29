@@ -1,3 +1,4 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 @version: {{ syslog_config_version }}
 # {{ ansible_managed }}
 
@@ -17,9 +18,9 @@ options {
   create_dirs (no);
   keep_hostname (yes);
   perm(0640);
-  {% if syslog_options_group -%}
+{% if syslog_options_group %}
   group("{{ syslog_options_group | default('adm', true) }}");
-  {% endif -%}
+{% endif %}
   chain_hostnames(no);
   stats_freq(43200);
   mark_freq(3600);

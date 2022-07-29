@@ -1,3 +1,4 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 #{{ ansible_managed }}
 
 # Common logs
@@ -44,11 +45,11 @@
 }
 
 {% for log in syslog_logs %}
-{% if loop.first %}
+  {% if loop.first %}
 #
 # Host specific logs
 #
-{% endif %}
+  {% endif %}
 /var/log/{{ log.filename |default(log.id + '.log') }} {
   sharedscripts
   missingok

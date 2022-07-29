@@ -1,0 +1,6 @@
+---
+
+syslog_packages:
+  - syslog-ng
+
+...

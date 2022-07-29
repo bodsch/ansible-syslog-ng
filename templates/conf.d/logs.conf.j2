@@ -1,12 +1,13 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
 
 # LOGS
 
 {% for log in syslog_logs %}
-{% if loop.first %}
+  {% if loop.first %}
 
 # HOST SPECIFIC LOGS
-{% endif %}
+  {% endif %}
 log { source({{ log.source | default('src', true) }});  filter(f_{{ log.id }});  destination(d_{{ log.id }}); {% if log.final is defined %}flags(final); {% endif %}};
 {% endfor %}
 
