@@ -1,11 +1,16 @@
 ---
 
+syslog_message_templates:
+  nginx: '${MSG}\n'
+
 syslog_logs:
   - id: ansible
     file_name: ansible.log
   - id: remote
     source: net
-    file_name: "remote/${FULLHOST}"
+    filter: ""
+    use_template: false
+    file_name: "remote/${FULLHOST}.log"
 
 syslog_sources:
   net:

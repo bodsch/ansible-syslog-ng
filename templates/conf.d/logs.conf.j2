@@ -8,7 +8,15 @@
 
 # HOST SPECIFIC LOGS
   {% endif %}
-log { source({{ log.source | default('src', true) }});  filter(f_{{ log.id }});  destination(d_{{ log.id }}); {% if log.final is defined %}flags(final); {% endif %}};
+log {
+  source({{ log.source | default('src', true) }});
+  {% if log.filter is defined and log.filter | string | length != 0 %}
+  filter(f_{{ log.id }});
+  {% endif %}
+  destination(d_{{ log.id }});
+  {% if log.final is defined %}
+  flags(final);
+  {% endif %}};
 {% endfor %}
 
 # COMMON LOGS
