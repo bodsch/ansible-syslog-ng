@@ -28,7 +28,15 @@ options {
 };
 
 # The custom template for file destinations.
-template tmpl { template("{{ syslog_default_template }}"); };
+{% if syslog_message_templates is defined and
+      syslog_message_templates | default({}) | count > 0 %}
+  {% for k, v in syslog_message_templates.items() %}
+template {{ k }} {
+  template("{{ v }}");
+};
+
+  {% endfor %}
+{% endif %}
 
 @include "conf.d/sources.conf"
 @include "conf.d/destinations.conf"

@@ -8,7 +8,15 @@
 
 # HOST SPECIFIC DESTINATIONS
   {% endif %}
-destination d_{{ "%-10s" | format(log.id) }}  { file("/var/log/{{ log.file_name | default(log.id + '.log', true) }}" template(tmpl)); };
+destination d_{{ "%-10s" | format(log.id) }}  {
+  file(
+    "/var/log/{{ log.file_name | default(log.id + '.log', true) }}"
+  {% if log.use_template | default('true') %}
+    template(tmpl)
+  {% endif %}
+  );
+};
+
 {% endfor %}
 
 # COMMON DESTINATIONS
