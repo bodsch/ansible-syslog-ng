@@ -54,9 +54,8 @@ Additional log destinations to be merged with the [default](./vars/main.yml) (`s
 
 `syslog_logs`
 
-A list of hashes that defines a trio of file destination, filter, log and
-also a lograte.
-a simplified configuration that is sufficient for most cases.
+A list of hashes, a trio of file destination, filter, log and - optionally - also a greatly simplified logrotate rule.
+A simplified configuration that should be sufficient for most cases.
 
 | parameter           | required | default          | description                                      |
 | :----               | :----    | :----            | :-----                                           |
@@ -105,7 +104,7 @@ Additional log sources to be merged with the [default](./vars/main.yml) (`syslog
 | parameter           | description           |
 | :----               | :-----                |
 | `comment`           | an optional comment   |
-| `internal`          | key is name of the source driver, typically unix_stream or file <br>(underscores are replaced with hyphens)<br>value is the driver parameter |
+| `$driver`           | key is name of the source driver, typically `unix_stream` or `file`<br>(underscores are replaced with hyphens)<br>value is the driver parameter |
 
 
 #### Example
