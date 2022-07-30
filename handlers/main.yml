@@ -19,6 +19,6 @@
     name: systemd-journald
     state: restarted
 
-- name: wait 20 seconds for clean startup
+- name: wait for clean startup
   pause:
-    seconds: 10
+    seconds: 5

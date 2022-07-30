@@ -4,10 +4,7 @@ syslog_options_group: 'adm'
 
 syslog_systemd_template: default
 
-syslog_server:
-  log_destination: /var/log/remote
-
-syslog_logs: []
+syslog_logs: {}
 
 syslog_sources:
   src:
@@ -15,8 +12,6 @@ syslog_sources:
       system:
 
 syslog_message_templates: {}
-
-# syslog_default_template: '${YEAR}-${MONTH}-${DAY}T${HOUR}:${MIN}:${SEC} ${LEVEL} ${MSGHDR}${MSG}\n'
 
 syslog_hardened: false
 

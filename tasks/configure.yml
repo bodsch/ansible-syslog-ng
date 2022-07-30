@@ -28,11 +28,12 @@
 - name: create directory for syslog clients
   file:
     state: directory
-    name: "{{ syslog_server.log_destination }}"
+    name: "{{ item }}"
     mode: 0775
+  loop: "{{ syslog_server_log_destinations }}"
   when:
-    - syslog_server.log_destination is defined
-    - syslog_server.log_destination | string | length > 0
+    - syslog_server_log_destinations is defined
+    - syslog_server_log_destinations | default([]) | count > 0
 
 - name: write splittet configuration files
   template:

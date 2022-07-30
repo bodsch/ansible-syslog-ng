@@ -61,7 +61,7 @@
       register: service_status
       notify:
         - reload systemctl daemon
-        - wait 20 seconds for clean startup
+        - wait for clean startup
       when:
         - syslog_unit_file is defined
 

@@ -4,13 +4,14 @@ syslog_message_templates:
   nginx: '${MSG}\n'
 
 syslog_logs:
-  - id: ansible
+  ansible:
     file_name: ansible.log
-  - id: remote
+    filter:
+      filter: program(ansible)
+  remote:
     source: net
-    filter: ""
-    use_template: false
-    file_name: "remote/${FULLHOST}.log"
+    template: nginx
+    file_name: "remote/nginx/${FULLHOST}.log"
 
 syslog_sources:
   net:

@@ -1,30 +1,35 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
 
-# FILTERS
-
-{% for log in syslog_logs %}
+{% for k, v in syslog_logs.items() %}
+  {% set _filter = {} %}
+  {% set _filter_name = k %}
+  {% if v.filter is defined and
+        v.filter | count != 0 and
+        v.filter.filter | default('') | string | length > 0 %}
+    {% set _filter = v.filter %}
+    {% if _filter.filter is defined %}
+      {% if _filter.filter is iterable and
+          (
+            _filter.filter is not string and
+            _filter.filter is not mapping
+          ) %}
+        {% set filter = _filter.filter | join(' and\n') | indent(2, first=False) %}
+      {% elif _filter.filter is string %}
+        {% set filter = _filter.filter %}
+      {% endif %}
+    {% else %}
+      {% set filter = 'program(' + k + ')' %}
+    {% endif %}
+  {% else %}
+    {% set filter = "" %}
+  {% endif %}
   {% if loop.first %}
-
 # HOST SPECIFIC FILTERS
   {% endif %}
 
-  {% if log.filter is defined and log.filter | string | length == 0 %}
-    {% set filter = None %}
-  {% elif log.filter is defined %}
-    {% set var = log.filter %}
-    {% if var is string %}
-      {% set filter = var %}
-    {% elif var is iterable and
-            (var is not string and var is not mapping) %}
-{# TODO: use filter_linkage as linker #}
-      {% set filter = var | join(' and\n') | indent(2, first=False) %}
-    {% endif %}
-  {% else %}
-    {% set filter = 'program(' + log.id + ')' %}
-  {% endif %}
-  {% if filter %}
-filter f_{{ "%-10s" | format(log.id) }}  {
+  {% if filter | string | length > 0 %}
+filter f_{{ _filter_name }}  {
   {{ filter }};
 };
   {% endif %}
@@ -32,6 +37,10 @@ filter f_{{ "%-10s" | format(log.id) }}  {
 
 # COMMON FILTERS
 {% if syslog_hardened %}
-filter f_grsec              { message("^(\\[.*\..*\] |)grsec:.*"); };
-filter f_pax                { message("^(\\[.*\..*\] |)PAX:.*"); };
+filter f_grsec {
+  message("^(\\[.*\..*\] |)grsec:.*");
+};
+filter f_pax {
+  message("^(\\[.*\..*\] |)PAX:.*");
+};
 {% endif %}

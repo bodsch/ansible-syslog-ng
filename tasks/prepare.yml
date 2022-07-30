@@ -39,8 +39,10 @@
 
 - name: merge syslog configuration between defaults and custom
   set_fact:
-    syslog_sources: "{{ syslog_defaults_sources |
-      combine( syslog_sources, recursive=True ) }}"
-    syslog_message_templates: "{{ syslog_defaults_message_templates |
-      combine( syslog_message_templates, recursive=True ) }}"
-    syslog_logs: "{{ syslog_defaults_logs + syslog_logs | flatten | unique }}"
+    syslog_sources: "{{ syslog_defaults_sources | combine( syslog_sources, recursive=True ) }}"
+    syslog_message_templates: "{{ syslog_defaults_message_templates | combine( syslog_message_templates, recursive=True ) }}"
+    syslog_logs: "{{ syslog_defaults_logs | combine( syslog_logs, recursive=True ) }}"
+
+- name: defined log directories
+  set_fact:
+    syslog_server_log_destinations: "{{ syslog_logs | log_directories('/var/log') }}"

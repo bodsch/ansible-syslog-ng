@@ -14,45 +14,57 @@ syslog_defaults_sources:
       file: /proc/kmsg
 
 syslog_defaults_logs:
-  - id: cron
+  cron:
     source: src
     file_name: cron.log
-    filter: facility(cron)
-  - id: kern
+    filter:
+      name: cron
+      filter: facility(cron)
+  kern:
     source: kernsrc
     file_name: kernel.log
-    filter: facility(kern)
-  - id: syslog
-    file_name: syslog.log
-    filter: not facility(authpriv)
-  - id: user
-    file_name: user.log
-    filter: facility(user)
-  - id: warn
-    file_name: warn.log
-    filter: level(warn..alert)
-  - id: emergency
-    file_name: emergency.log
-    filter: level(emerg)
-  - id: authlog
-    file_name: auth.log
-    filter: facility(auth, authpriv)
-  - id: messages
-    file_name: messages.log
-    filter_linkage: and
     filter:
-      - level(info..alert)
-      - level(debug..notice)
-      - not facility(auth, authpriv, mail, cron, kern, local7)
-      - not program (syslog-ng)
-      - not program (dhcpd)
-      - not program(named)
-  - id: mail
+      name: kern
+      filter: facility(kern)
+  syslog:
+    file_name: syslog.log
+    filter:
+      filter: not facility(authpriv)
+  user:
+    file_name: user.log
+    filter:
+      filter: facility(user)
+  warn:
+    file_name: warn.log
+    filter:
+      filter: level(warn..alert)
+  emergency:
+    file_name: emergency.log
+    filter:
+      filter: level(emerg)
+  authlog:
+    file_name: auth.log
+    filter:
+      filter: facility(auth, authpriv)
+  messages:
+    file_name: messages.log
+    # filter_linkage: and
+    filter:
+      filter:
+        - level(info..alert)
+        - level(debug..notice)
+        - not facility(auth, authpriv, mail, cron, kern, local7)
+        - not program (syslog-ng)
+        - not program (dhcpd)
+        - not program(named)
+  mail:
     file_name: mail.log
-    filter: facility(mail)
-  - id: dhcpd
+    filter:
+      filter: facility(mail)
+  dhcpd:
     file_name: dhcpd.log
-    # filter: program(dhcpd)
+    filter:
+      filter: program(dhcpd)
 
 syslog_dependencies: []
 
