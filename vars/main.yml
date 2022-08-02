@@ -2,6 +2,8 @@
 
 syslog_config_version: ''
 
+syslog_unit_file: syslog-ng
+
 syslog_defaults_message_templates:
   tmpl: '${YEAR}-${MONTH}-${DAY}T${HOUR}:${MIN}:${SEC} ${LEVEL} ${MSGHDR}${MSG}\n'
 
