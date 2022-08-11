@@ -1,8 +1,6 @@
 ---
 
-syslog_options_group: 'adm'
-
-syslog_systemd_template: default
+syslog_options: {}
 
 syslog_logs: {}
 
@@ -13,10 +11,14 @@ syslog_sources:
 
 syslog_message_templates: {}
 
-syslog_hardened: false
-
 syslog_journald:
   wipe_persistent: true
   config:
     Storage: volatile
     ForwardToSyslog: 'yes'
+
+syslog_hardened: false
+
+syslog_systemd_template: default
+
+...
