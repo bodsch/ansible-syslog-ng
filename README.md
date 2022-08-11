@@ -30,9 +30,7 @@ Tested on
 ## usage
 
 ```yaml
-syslog_options_group: 'adm'
-
-syslog_systemd_template: default
+syslog_options: {}
 
 syslog_logs: {}
 
@@ -43,19 +41,40 @@ syslog_sources:
 
 syslog_message_templates: {}
 
-syslog_hardened: false
-
 syslog_journald:
   wipe_persistent: true
   config:
     Storage: volatile
     ForwardToSyslog: 'yes'
+
+syslog_hardened: false
+
+syslog_systemd_template: default
 ```
 
+### `syslog_options`
+
+```yaml
+syslog_options:
+  chain_hostnames: false
+  create_dirs: false
+  dns-cache: false
+  flush_lines: 0
+  group: "adm"
+  keep_hostname: true
+  log_fifo_size: 10000
+  mark_freq: 3600
+  perm: "0640"
+  stats_freq: 43200
+  time_reopen: 10
+  ts_format: iso
+  use_dns: false
+  use_fqdn: false
+```
 
 ### `syslog_logs`
 
-Additional log destinations to be merged with the [default](./vars/main.yml) (`syslog_defaults_logs`)  ones.
+Additional log destinations to be merged with the [default](./vars/main.yml) (`syslog_defaults_logs`) ones.
 
 `syslog_logs`
 

@@ -17,9 +17,28 @@ class FilterModule(object):
 
     def filters(self):
         return {
+            'type': self.var_type,
             'get_service': self.get_service,
             'log_directories': self.log_directories,
         }
+
+    def var_type(self, var):
+        '''
+        Get the type of a variable
+        '''
+        # display.v("var   : {} ({})".format(var, type(var)))
+        # display.v("result: {}".format(type(var).__name__))
+
+        _type = type(var).__name__
+
+        display.v(f" {var}, type: {_type}")
+
+        if (isinstance(var, str) or _type == "AnsibleUnsafeText"):
+            _type = "str"
+
+        display.v(f" = result {_type}")
+
+        return _type
 
     def get_service(self, data, search_for):
         name = None

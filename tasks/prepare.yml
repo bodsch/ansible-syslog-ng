@@ -15,6 +15,8 @@
         - "{{ ansible_distribution | lower }}.yml"
         # eg. redhat / debian / archlinux
         - "{{ ansible_os_family | lower }}.yml"
+        # artixlinux
+        - "{{ ansible_os_family | lower | replace(' ', '') }}.yml"
         - default.yaml
       skip: true
 
@@ -39,6 +41,7 @@
 
 - name: merge syslog configuration between defaults and custom
   set_fact:
+    syslog_options: "{{ syslog_defaults_options | combine( syslog_options, recursive=True ) }}"
     syslog_sources: "{{ syslog_defaults_sources | combine( syslog_sources, recursive=True ) }}"
     syslog_message_templates: "{{ syslog_defaults_message_templates | combine( syslog_message_templates, recursive=True ) }}"
     syslog_logs: "{{ syslog_defaults_logs | combine( syslog_logs, recursive=True ) }}"
