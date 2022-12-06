@@ -1,0 +1,30 @@
+---
+
+syslog_destinations:
+  network:
+    network: instance
+    transport: tcp
+    # port: 2010
+  syslog_udp:
+    syslog: instance
+    transport: udp
+    # port: 514
+  cron:
+    file_name: cron.log
+    template: cron
+
+syslog_logs:
+  syslog:
+    source: src
+    destination: network
+  ansible:
+    source: src
+    destination: network
+  cron:
+    source: src
+    destination: cron
+  user:
+    source: src
+    destination: network
+
+...

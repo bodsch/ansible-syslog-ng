@@ -1,0 +1,12 @@
+---
+
+syslog_message_templates:
+  nginx: '${MSG}\n'
+
+syslog_logs:
+  ansible:
+    file_name: ansible.log
+    filter:
+      filter: program(ansible)
+
+...

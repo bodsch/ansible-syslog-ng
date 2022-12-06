@@ -1,0 +1,19 @@
+---
+
+syslog_message_templates:
+  nginx: '${MSG}\n'
+
+syslog_logs:
+  ansible:
+    file_name: ansible.log
+    filter:
+      filter: program(ansible)
+  remote:
+    source: net
+    template: nginx
+    file_name: "remote/nginx/${FULLHOST}.log"
+
+syslog_sources:
+  net:
+    - comment: network
+      udp:
