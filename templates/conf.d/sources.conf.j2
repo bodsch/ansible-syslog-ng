@@ -3,17 +3,68 @@
 
 # SOURCES
 
-{% for id in syslog_sources.keys() %}
-source {{ id }} {
-  {% for dic in syslog_sources.get(id, []) %}
-    {% if dic.comment is defined %}
-  # {{ dic.comment }}
-      {% set _ = dic.pop('comment') %}
+{% for source, values in syslog_sources.items() %}
+  {% if values | type == "list" %}
+# +-------------------------------------------------------------
+# | WARNING
+# | the using of a list are OBSOLETE
+# | this configuration will NOT be written:
+# |   {{ values }}
+# | PLEASE MIGRATE YOUR CONFIG TO DICTIONARY
+# +-------------------------------------------------------------
+  {% endif %}
+  {% if source in ["tcp", "udp"] %}
+# +-------------------------------------------------------------
+# | OBSOLETE
+# | the using of 'tcp' or 'udp' are obsolete!
+# | you should use network()
+# +-------------------------------------------------------------
+  {% endif %}
+  {% if values | type == "dict" %}
+source {{ source }} {
+    {% if values is defined and
+          values | count > 0 %}
+      {% if values.comment is defined %}
+  # {{ values.comment }}
+        {% set _ = values.pop('comment') %}
+      {% endif %}
+      {% if values.file is defined %}
+  file(
+    "{{ values.file }}"
+  );
+      {% elif values.internal is defined %}
+  internal();
+      {% elif values.system is defined %}
+  system();
+      {% else %}
+        {% if values | type == "dict" %}
+          {% for k, v in values.items() %}
+            {% if v.comment is defined and
+                  v.comment | string | length > 0 %}
+  # {{ v.comment }}
+            {% endif %}
+            {% if v.transport is defined and
+                  v.transport in ["udp", "tcp", "tls"] %}
+              {% set _transport, _port = v | template_syslog %}
+  network(
+    ip("{{ v.ip }}")
+    transport({{ _transport }})
+    port({{ _port }})
+              {% if v.flags is defined and
+                    v.flags | string | length > 0 %}
+    # flags() - not supported yet
+              {% endif %}
+              {% if v.tls is defined %}
+    # tls() - not supported yet
+              {% endif %}
+  );
+
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endif %}
     {% endif %}
-    {% for k, v in dic.items() if k != 'comment' %}
-  {{ k | replace('_', '-') }}({{ '"%s"' | format(v) if v else '' }});
-    {% endfor %}
-  {% endfor %}
 };
 
+  {% endif %}
 {% endfor %}

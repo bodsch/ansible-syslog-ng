@@ -5,5 +5,7 @@ syslog_dependencies:
 
 syslog_packages:
   - syslog-ng-core
+  - syslog-ng-mod-examples
+  - syslog-ng-mod-extra
 
 ...

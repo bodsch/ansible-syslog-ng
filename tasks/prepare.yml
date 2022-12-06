@@ -43,9 +43,33 @@
   set_fact:
     syslog_options: "{{ syslog_defaults_options | combine( syslog_options, recursive=True ) }}"
     syslog_sources: "{{ syslog_defaults_sources | combine( syslog_sources, recursive=True ) }}"
+    syslog_destinations: "{{ syslog_defaults_destinations | combine( syslog_destinations, recursive=True ) }}"
     syslog_message_templates: "{{ syslog_defaults_message_templates | combine( syslog_message_templates, recursive=True ) }}"
     syslog_logs: "{{ syslog_defaults_logs | combine( syslog_logs, recursive=True ) }}"
+
+- name: check obsolete configuration
+  set_fact:
+    _obsolete_configuration: "{{ syslog_logs | check_obsolete_config }}"
+
+- name: check obsolete configuration
+  delegate_to: localhost
+  debug:
+    msg: |
+      The following "syslog_logs" configurations have an old syntax and should be migrated:
+        - "{{ _obsolete_configuration | join(', ') }}"
+      This feature will be removed in version 1.6.x
+
+# | warning(columns=100, hostname=ansible_hostname, version='1.6') }}"
+
+- name: migrate obsolete configurations
+  set_fact:
+    syslog_logs: "{{ syslog_logs | migrate_config('syslog_logs') }}"
+    syslog_destinations: "{{ syslog_destinations | migrate_config('syslog_destinations', syslog_logs) }}"
+  when:
+    - _obsolete_configuration is defined
 
 - name: defined log directories
   set_fact:
     syslog_server_log_destinations: "{{ syslog_logs | log_directories('/var/log') }}"
+
+...

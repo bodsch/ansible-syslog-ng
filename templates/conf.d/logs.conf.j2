@@ -1,6 +1,26 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
 
+# COMMON LOGS
+{% if syslog_hardened %}
+log {
+  source(kernsrc);
+  filter(f_pax);
+  destination(d_pax);
+};
+
+log {
+  source(kernsrc);
+  filter(f_grsec);
+  destination(d_grsec);
+};
+{% endif %}
+
+log {
+  source(src);
+  destination(d_console_all);
+};
+
 {% for k, v in syslog_logs.items() %}
   {% set _filter_name = k %}
   {% if loop.first %}
@@ -16,24 +36,7 @@ log {
   {% endif %}
   destination(d_{{ k }});
   {% if v.final is defined %}
-  flags(final);
-  {% endif %}};
+  flags(final)
+  {% endif %}
+};
 {% endfor %}
-
-# COMMON LOGS
-{% if syslog_hardened %}
-log {
-  source(kernsrc);
-  filter(f_pax);
-  destination(d_pax);
-};
-log {
-  source(kernsrc);
-  filter(f_grsec);
-  destination(d_grsec);
-};
-{% endif %}
-log {
-  source(src);
-  destination(d_console_all);
-};
