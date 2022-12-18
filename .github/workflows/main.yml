@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: 'ansible-syslog-ng'
 
@@ -73,7 +73,7 @@ jobs:
 
     steps:
       - name: check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: 'ansible-syslog-ng'
 
@@ -95,16 +95,3 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           DISTRIBUTION: ${{ matrix.image }}
-
-  publish:
-    if: github.ref == 'refs/heads/main'
-    needs:
-      - arch
-      - deb
-    runs-on: ubuntu-latest
-    steps:
-      - name: galaxy
-        uses: robertdebock/galaxy-action@1.2.1
-        with:
-          galaxy_api_key: ${{ secrets.galaxy_api_key }}
-          git_branch: main

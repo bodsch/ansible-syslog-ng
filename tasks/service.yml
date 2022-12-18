@@ -7,33 +7,39 @@
   register: syslog_validate_config
 
 - name: enable and start syslog-ng (no systemd)
-  service:
+  ansible.builtin.service:
     name: syslog-ng
     enabled: true
     state: started
   when:
     - ansible_service_mgr != "systemd"
 
-- block:
+- name: systemd
+  when:
+    - ansible_service_mgr == "systemd"
+  block:
     - name: populate service facts
-      service_facts:
+      ansible.builtin.service_facts:
       register: systemd_facts
 
     - name: set systemd unit name
-      set_fact:
+      ansible.builtin.set_fact:
         syslog_unit_file: "{{ ansible_facts.services | get_service('syslog-ng') }}"
 
     - name: detect systemd template unit
-      stat:
+      ansible.builtin.stat:
         path: /etc/default/{{ syslog_unit_file }}{{ syslog_systemd_template }}
       register: systemd_template
       when:
         - syslog_unit_file is match('.*@')
 
     - name: use systemd template unit
+      when:
+        - syslog_unit_file is match('.*@')
+        - systemd_template.stat.exists
       block:
         - name: set link for template unit
-          file:
+          ansible.builtin.file:
             src: /lib/systemd/system/{{ syslog_unit_file }}.service
             dest: /etc/systemd/system/{{ syslog_unit_file }}{{ syslog_systemd_template }}.service
             state: link
@@ -41,21 +47,18 @@
             - reload systemctl daemon
 
         - name: define systemd template unit
-          set_fact:
+          ansible.builtin.set_fact:
             syslog_unit_file: "{{ syslog_unit_file }}{{ syslog_systemd_template }}"
-      when:
-        - syslog_unit_file is match('.*@')
-        - systemd_template.stat.exists
 
     - name: enable {{ syslog_unit_file }}.service
-      service:
+      ansible.builtin.service:
         name: '{{ syslog_unit_file }}'
         enabled: true
       when:
         - syslog_unit_file is defined
 
     - name: start {{ syslog_unit_file }}.service
-      service:
+      ansible.builtin.service:
         name: '{{ syslog_unit_file }}'
         state: started
       register: service_status
@@ -64,6 +67,3 @@
         - wait for clean startup
       when:
         - syslog_unit_file is defined
-
-  when:
-    - ansible_service_mgr == "systemd"

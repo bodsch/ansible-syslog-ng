@@ -1,24 +1,24 @@
 ---
 - name: reload syslog-ng
-  service:
+  ansible.builtin.service:
     name: '{{ syslog_unit_file }}'
     state: reloaded
 
 - name: restart syslog-ng
-  service:
+  ansible.builtin.service:
     name: '{{ syslog_unit_file }}'
     state: restarted
 
 - name: reload systemctl daemon
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
   when: ansible_service_mgr == 'systemd'
 
 - name: restart systemd-journald
-  service:
+  ansible.builtin.service:
     name: systemd-journald
     state: restarted
 
 - name: wait for clean startup
-  pause:
+  ansible.builtin.pause:
     seconds: 5
