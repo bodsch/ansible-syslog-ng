@@ -17,7 +17,7 @@
         - "{{ ansible_os_family | lower }}.yml"
         # artixlinux
         - "{{ ansible_os_family | lower | replace(' ', '') }}.yml"
-        - default.yaml
+        - default.yml
       skip: true
 
 - name: update package cache
