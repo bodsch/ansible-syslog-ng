@@ -60,7 +60,7 @@ class SyslogNgCmd(object):
 
             self.module.log(msg=f"   version: '{version}'")
 
-            if(rc == 0):
+            if (rc == 0):
                 return dict(
                     rc = 0,
                     failed = False,

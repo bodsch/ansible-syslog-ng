@@ -48,7 +48,7 @@ class FilterModule(object):
 
         for k, v in data.items():
             display.v("  - {}  - {}".format(k, v))
-            if(re.match(regex_list_compiled, k)):
+            if (re.match(regex_list_compiled, k)):
                 # display.v("  = {}  - {}".format(k, v))
                 name = v.get('name')
                 break
