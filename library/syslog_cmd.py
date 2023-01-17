@@ -46,7 +46,7 @@ class SyslogNgCmd(object):
             for arg in parameter_list:
                 args.append(arg)
 
-        self.module.log(msg=f" - args {args}")
+        self.module.log(msg=" - args {}".format(args))
 
         rc, out, err = self._exec(args)
 
@@ -58,7 +58,7 @@ class SyslogNgCmd(object):
             version = re.search(pattern, out)
             version = version.group(1)
 
-            self.module.log(msg=f"   version: '{version}'")
+            self.module.log(msg="   version: '{}'".format(version))
 
             if (rc == 0):
                 return dict(
@@ -72,9 +72,9 @@ class SyslogNgCmd(object):
             """
               check syntax
             """
-            self.module.log(msg=f"   rc : '{rc}'")
-            self.module.log(msg=f"   out: '{out}'")
-            self.module.log(msg=f"   err: '{err}'")
+            self.module.log(msg="   rc : '{}'".format(rc))
+            self.module.log(msg="   out: '{}'".format(out))
+            self.module.log(msg="   err: '{}'".format(err))
 
             if rc == 0:
                 return dict(
