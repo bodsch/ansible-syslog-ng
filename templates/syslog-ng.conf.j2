@@ -8,8 +8,8 @@
 
 options {
 {% for k, v in syslog_options.items() %}
-  {% if v | type == "bool" %}
-  {{ k }}({{ v | bool | ternary('yes', 'no') }});
+  {% if v | bodsch.core.type == "bool" %}
+  {{ k }}({{ v | bool | bodsch.core.config_bool(true_as='yes', false_as='no') }});
   {% else %}
   {{ k }}({{ v }});
   {% endif %}

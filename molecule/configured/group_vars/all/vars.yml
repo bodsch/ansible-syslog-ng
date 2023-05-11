@@ -1,0 +1,30 @@
+---
+
+syslog_message_templates:
+  nginx: '${MSG}\n'
+
+syslog_options:
+  keep_hostname: false
+  create_dirs: true
+  perm: "0644"
+
+syslog_logs:
+  ansible:
+    file_name: ansible.log
+    filter:
+      filter: program(ansible)
+  remote:
+    source: net
+    template: nginx
+    file_name: "remote/nginx/${HOST}/${YEAR}.${MONTH}.${DAY}/messages.log"
+  remote_foo:
+    source: net
+    file_name: "remote/${HOST}/message"
+    filter:
+      filter:
+        - not host("localhost")
+
+syslog_sources:
+  net:
+    - comment: network
+      udp:
