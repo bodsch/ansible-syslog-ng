@@ -64,6 +64,7 @@ class FilterModule(object):
 
         for k, v in data.items():
             file_name = v.get('file_name', f"{k}.log")
+            # display.v(f" {file_name}")
             full_file_name = os.path.join(
                 base_directory,
                 file_name
@@ -73,10 +74,20 @@ class FilterModule(object):
                 os.path.dirname(full_file_name)
             )
 
+        # display.v(f" {log_dirs}")
         unique_dirs = list(dict.fromkeys(log_dirs))
 
         # remove base_directory
         _ = unique_dirs.remove(base_directory)
 
-        display.v(" = result {}".format(unique_dirs))
-        return unique_dirs
+        # display.v(f" unique_dirs: {unique_dirs} ({type(unique_dirs)})")
+
+        log_dirs = []
+        for d in unique_dirs:
+            if "/$" in d:
+                clean_dir_name = d.split("/$")[0]
+                log_dirs.append(clean_dir_name)
+
+        display.v(f"= result {log_dirs}")
+        return log_dirs
+
