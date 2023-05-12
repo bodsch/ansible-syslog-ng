@@ -15,10 +15,10 @@
     - ansible_service_mgr is defined
     - ansible_service_mgr | lower == "systemd"
 
-- name: facts
-  ansible.builtin.include_tasks: facts.yml
-
 - name: service
   ansible.builtin.include_tasks: service.yml
+
+- name: facts
+  ansible.builtin.include_tasks: facts.yml
 
 ...

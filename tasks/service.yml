@@ -21,6 +21,7 @@
     - name: populate service facts
       ansible.builtin.service_facts:
       register: systemd_facts
+      no_log: true
 
     - name: set systemd unit name
       ansible.builtin.set_fact:

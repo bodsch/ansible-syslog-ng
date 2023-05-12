@@ -12,7 +12,7 @@ syslog_sources:
 syslog_message_templates: {}
 
 syslog_journald:
-  wipe_persistent: true
+  wipe_persistent: false
   config:
     Storage: volatile
     ForwardToSyslog: 'yes'
