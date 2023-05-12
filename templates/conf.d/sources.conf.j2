@@ -10,8 +10,16 @@ source {{ id }} {
   # {{ dic.comment }}
       {% set _ = dic.pop('comment') %}
     {% endif %}
-    {% for k, v in dic.items() if k != 'comment' %}
+    {% for k, v in dic.items() %}
+      {% if k == "file" %}
   {{ k | replace('_', '-') }}({{ '"%s"' | format(v) if v else '' }});
+      {% elif k in ["udp", "tcp"] %}
+        {% set _net = v %}
+        {% set _net_type = k %}
+  {{ _net_type }}({{ v | syslog_network_definition("source") }});
+      {% else %}
+  {{ k | replace('_', '-') }}({{ '%s' | format(v) if v else '' }});
+      {% endif %}
     {% endfor %}
   {% endfor %}
 };

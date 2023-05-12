@@ -7,13 +7,40 @@
   {% endif %}
 
 destination d_{{ k }}  {
+  {% if v.destination is defined and v.destination | bodsch.core.type == "dict" and v.destination | count > 0 %}
+    {% set _net_type = None %}
+    {% if v.destination.file is defined and v.destination.file | string | length > 0 %}
+  file(
+    "/var/log/{{ v.destination.file | default(k + '.log', true) }}"
+      {% if v.use_template | default('true') and
+            v.template | default('tmpl') | string | length > 0 %}
+    template({{ v.template | default('tmpl') }})
+      {% endif %}
+  );
+    {% endif %}
+    {% if v.destination.udp is defined and v.destination.udp | bodsch.core.type == "dict" and v.destination.udp | count > 0 %}
+      {% set _net = v.destination.udp %}
+      {% set _net_type = "udp" %}
+    {% endif %}
+    {% if v.destination.tcp is defined and v.destination.tcp | bodsch.core.type == "dict" and v.destination.tcp | count > 0 %}
+      {% set _net = v.destination.tcp %}
+      {% set _net_type = "tcp" %}
+    {% endif %}
+  {% if _net_type in ["udp", "tcp"] %}
+  {{ _net_type }}(
+    {{ _net | syslog_network_definition("destination") }}
+  );
+    {% endif %}
+  {% endif %}
+  {% if v.file_name is defined and v.file_name | string | length > 0 %}
   file(
     "/var/log/{{ v.file_name | default(k + '.log', true) }}"
-  {% if v.use_template | default('true') and
-        v.template | default('tmpl') | string | length > 0 %}
+    {% if v.use_template | default('true') and
+          v.template | default('tmpl') | string | length > 0 %}
     template({{ v.template | default('tmpl') }})
-  {% endif %}
+    {% endif %}
   );
+  {% endif %}
 };
 
 {% endfor %}
@@ -21,18 +48,24 @@ destination d_{{ k }}  {
 # COMMON DESTINATIONS
 {% if syslog_hardened %}
 destination d_grsec {
-  file("/var/log/grsec.log"
-  template(tmpl));
+  file(
+    "/var/log/grsec.log"
+    template(tmpl)
+  );
 };
 destination d_pax {
-  file("/var/log/pax.log"
-  template(tmpl));
+  file(
+    "/var/log/pax.log"
+    template(tmpl)
+  );
 };
 {% endif %}
 destination d_console {
   usertty("root");
 };
 destination d_console_all {
-  file("/dev/tty12"
-  template(tmpl));
+  file(
+    "/dev/tty12"
+    template(tmpl)
+  );
 };
