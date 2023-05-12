@@ -12,71 +12,90 @@ display = Display()
 
 class FilterModule(object):
     """
-        Ansible file jinja2 tests
     """
-
     def filters(self):
         return {
             'get_service': self.get_service,
             'log_directories': self.log_directories,
+            'syslog_network_definition': self.syslog_network_definition,
         }
 
-
     def get_service(self, data, search_for):
+        """
+        """
         name = None
-        # count = len(data.keys())
-        # display.vv("found: {} entries, use filter {}".format(count, search_for))
         regex_list_compiled = re.compile(f"^{search_for}.*.service$")
 
-        for k, v in data.items():
-            display.v(f"  - {k}  - {v}")
-            if (re.match(regex_list_compiled, k)):
-                # display.v("  = {}  - {}".format(k, v))
-                name = v.get('name')
-                break
+        match = {k: v for k, v in data.items() if re.match(regex_list_compiled, k)}
 
-        name = name.replace('.service', '')
+        display.vv(f"found: {match}  {type(match)}")
+
+        if isinstance(match, dict):
+            values = list(match.values())[0]
+            name = values.get('name', search_for).replace('.service', '')
+
+        display.vv(f"= result {name}")
         return name
 
     def log_directories(self, data, base_directory):
         """
           return a list of directories
         """
+        # display.v(f"log_directories(self, {data}, {base_directory})")
+        log_dirs = []
+        log_files = sorted([v.get('file_name') for k, v in data.items() if v.get('file_name')])
+        unique = list(dict.fromkeys(log_files))
+        for d in unique:
+            if "/$" in d:
+                clean_dir_name = d.split("/$")[0]
+                log_dirs.append(clean_dir_name)
+
+        unique_dirs = list(dict.fromkeys(log_dirs))
+
         log_dirs = []
 
-        for k, v in data.items():
-            file_name = v.get('file_name', f"{k}.log")
-
-            display.v(f" {file_name}")
-
+        for file_name in unique_dirs:
             full_file_name = os.path.join(
                 base_directory,
                 file_name
             )
+            log_dirs.append(full_file_name)
 
-            log_dirs.append(
-                os.path.dirname(full_file_name)
-            )
-
-        display.v(f" {log_dirs}")
-
-        unique_dirs = list(dict.fromkeys(log_dirs))
-
-        # remove base_directory
-        _ = unique_dirs.remove(base_directory)
-
-        display.v(f" unique_dirs: {unique_dirs} ({type(unique_dirs)})")
-
-        log_dirs = []
-        for d in unique_dirs:
-            if "/$" in d:
-                display.v(f" {d}")
-
-                clean_dir_name = d.split("/$")[0]
-                display.v(f"   {clean_dir_name}")
-                log_dirs.append(clean_dir_name)
-
-        display.v(f" {log_dirs} ({type(log_dirs)})")
-
-        display.v(f"= result {log_dirs}")
+        display.vv(f"= result {log_dirs}")
         return log_dirs
+
+    def validate_syslog_destination(self, data):
+        """
+        """
+        pass
+
+    def syslog_network_definition(self, data, conf_type="source"):
+        """
+        """
+        result = None
+        if isinstance(data, dict):
+            _list = []
+            network_ip = data.get("ip", None)
+            network_port = data.get("port", None)
+            network_spoof = data.get("spoof_source", None)
+            network_fifo_size = data.get("log_fifo_size", None)
+            if network_ip:
+                if conf_type == "source":
+                    _list.append(f"ip({network_ip})")
+                else:
+                    _list.append(f"\"{network_ip}\"")
+            if network_port:
+                _list.append(f"port({network_port})")
+            if network_spoof:
+                spoof = 'yes' if network_spoof else 'no'
+                _list.append(f"spoof_source({spoof})")
+            if network_fifo_size:
+                _list.append(f"log_fifo_size({network_fifo_size})")
+
+            result = " ".join(_list)
+
+        if isinstance(data, str):
+            result = data
+
+        display.vv(f"= result {result}")
+        return result

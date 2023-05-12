@@ -18,6 +18,20 @@ This again allows a simple, central logging service to be run on the user's own 
 [releases]: https://github.com/bodsch/ansible-syslog-ng/releases
 [quality]: https://galaxy.ansible.com/bodsch/syslog_ng
 
+## Requirements & Dependencies
+
+Ansible Collections
+
+- [bodsch.core](https://github.com/bodsch/ansible-collection-core)
+
+```bash
+ansible-galaxy collection install bodsch.core
+```
+or
+```bash
+ansible-galaxy collection install --requirements-file collections.yml
+```
+
 
 ## tested operating systems
 
@@ -86,11 +100,15 @@ A simplified configuration that should be sufficient for most cases.
 | parameter           | required | default           | description                                      |
 | :----               | :----    | :----             | :-----                                           |
 | `source`            | `false`  | `src`             | source of logging messages - 'src', or 'kernsrc' |
-| `file_name`         | `false`  | `${key}.log`      | log file relative to `/var/log`. (The basic directory is created automatically.) |
+| `destination.file`  | `false`  | `${key}.log`      | log file relative to `/var/log`. (The basic directory is created automatically.) |
+| `destination.udp`   | `false`  | `-`               | `udp` log Destination to an remote syslog server. |
+| `destination.tcp`   | `false`  | `-`               | `tcp` log Destination to an remote syslog server. |
 | `filter.name`       | `false`  | `${key}`          | An (optional) name of the filter. If it is not specified, the `${key}` is used as name. |
 | `filter.filter`     | `false`  | `program(${key})` | The syslog filter. This can be a simple string or a list of strings.<br>The list is connected with an `and`.  |
 | `final`             | `false`  | `false`           | whether set a final flag                         |
 
+> **Only one log destination may be defined!**
+> **So either `file`, or `udp` / `tcp`!**
 
 #### Example
 
@@ -98,7 +116,8 @@ A simplified configuration that should be sufficient for most cases.
 syslog_logs:
   kern:
     source: kernsrc
-    file_name: kernel.log
+    destination:
+      file: kernel.log
     filter:
       name: kern
       filter: facility(kern)
@@ -114,14 +133,23 @@ syslog_logs:
         - not program(named)
   iptables:
     source: kernsrc
-    file_name: iptables.log
+    destination:
+      file: iptables.log
     filter:
       filter: message("^(\\[.*\..*\] |)ip6?tables.*")
     final: true
   remote:
     source: net
     template: nginx
-    file_name: "remote/nginx/${FULLHOST}.log"
+    destination:
+      file: "remote/nginx/${FULLHOST}.log"
+  loghost:
+    source: s_remote
+    destination:
+      udp:
+        ip: "10.10.0.1"
+        port: 514
+        spoof_source: true
 ```
 
 
@@ -149,6 +177,12 @@ syslog_sources:
   net:
     - comment: messages from syslog-clients
       udp:
+  s_remote:
+    - comment: remote sources on port 5140
+      tcp:
+        ip: 0.0.0.0
+        port: 5140
+      udp: 'ip(0.0.0.0) port(5140)'      
 ```
 
 
@@ -161,7 +195,7 @@ By default, a template called `tmpl` is created, which is defined as follows:
 
 `'${YEAR}-${MONTH}-${DAY}T${HOUR}:${MIN}:${SEC} ${LEVEL} ${MSGHDR}${MSG}\n'`
 
-By default, each destrination is assigned this template.
+By default, each destrination is assigned this template.  
 If this is not desired, `use_template` must be set in the `syslog_logs` configuration.
 
 ```yaml
@@ -183,14 +217,9 @@ syslog_logs:
   remote:
     source: net
     template: ngix
-    file_name: "remote/${FULLHOST}.log"
+    destination:
+      file: "remote/${FULLHOST}.log"
 ```
-
-## TODO
-support remote host like this:
-
-    `destination d_net { tcp("127.0.0.1" port(1000) log_fifo_size(1000)); };`
-
 
 ## Contribution
 

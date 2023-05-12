@@ -15,8 +15,16 @@ log {
   filter(f_{{ _filter_name }});
   {% endif %}
   destination(d_{{ k }});
-  {% if v.final is defined %}
+  {% if v.final is defined or v.flags is defined %}
+    {% if v.flags is defined %}
+      {% if v.flags | bodsch.core.type == "str" %}
+  flags({{ v.flags }});
+      {% elif v.flags | bodsch.core.type == "list" %}
+  flags({{ v.flags | join(', ') }});
+       {% endif %}
+    {% else %}
   flags(final);
+    {% endif %}
   {% endif %}};
 {% endfor %}
 

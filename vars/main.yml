@@ -34,38 +34,46 @@ syslog_defaults_sources:
 syslog_defaults_logs:
   cron:
     source: src
-    file_name: cron.log
+    destination:
+      file: cron.log
     filter:
       name: cron
       filter: facility(cron)
   kern:
     source: kernsrc
-    file_name: kernel.log
+    destination:
+      file: kernel.log
     filter:
       name: kern
       filter: facility(kern)
   syslog:
-    file_name: syslog.log
+    destination:
+      file: syslog.log
     filter:
       filter: not facility(authpriv)
   user:
-    file_name: user.log
+    destination:
+      file: user.log
     filter:
       filter: facility(user)
   warn:
-    file_name: warn.log
+    destination:
+      file: warn.log
     filter:
       filter: level(warn..alert)
   emergency:
-    file_name: emergency.log
+    destination:
+      file: emergency.log
     filter:
       filter: level(emerg)
   authlog:
-    file_name: auth.log
+    destination:
+      file: auth.log
     filter:
       filter: facility(auth, authpriv)
   messages:
-    file_name: messages.log
+    destination:
+      file: messages.log
     # filter_linkage: and
     filter:
       filter:
@@ -76,11 +84,13 @@ syslog_defaults_logs:
         - not program (dhcpd)
         - not program(named)
   mail:
-    file_name: mail.log
+    destination:
+      file: mail.log
     filter:
       filter: facility(mail)
   dhcpd:
-    file_name: dhcpd.log
+    destination:
+      file: dhcpd.log
     filter:
       filter: program(dhcpd)
 
