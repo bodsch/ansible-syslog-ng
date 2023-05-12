@@ -139,7 +139,8 @@ def test_version(host):
 
 
 def test_service(host):
-    service = host.service("syslog-ng")
+    service_unit = local_facts(host).get("service_unit")
+    service = host.service(service_unit)
     assert service.is_enabled
     assert service.is_running
 
