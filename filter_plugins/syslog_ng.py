@@ -24,7 +24,7 @@ class FilterModule(object):
         """
         """
         name = None
-        regex_list_compiled = re.compile(f"^{search_for}.*.service$")
+        regex_list_compiled = re.compile(f"^{search_for}.*")
 
         match = {k: v for k, v in data.items() if re.match(regex_list_compiled, k)}
 
