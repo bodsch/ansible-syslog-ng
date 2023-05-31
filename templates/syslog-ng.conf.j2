@@ -31,3 +31,6 @@ template {{ k }} {
 @include "conf.d/destinations.conf"
 @include "conf.d/filters.conf"
 @include "conf.d/logs.conf"
+{% for syslog_include in syslog_includes %}
+@include "{{ syslog_include }}"
+{% endfor %}

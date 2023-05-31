@@ -21,4 +21,6 @@ syslog_hardened: false
 
 syslog_systemd_template: default
 
+syslog_includes: []
+
 ...
