@@ -13,10 +13,23 @@ source {{ id }} {
     {% for k, v in dic.items() %}
       {% if k == "file" %}
   {{ k | replace('_', '-') }}({{ '"%s"' | format(v) if v else '' }});
-      {% elif k in ["udp", "tcp"] %}
+      {% elif k in ["udp", "tcp", "network"] %}
         {% set _net = v %}
         {% set _net_type = k %}
-  {{ _net_type }}({{ v | syslog_network_definition("source") }});
+  {{ _net_type }}(
+          {% set network_definition = v | syslog_network_definition("source") %}
+          {% for k, v in network_definition.items() %}
+            {% if v | bodsch.core.type != "dict" %}
+    {{ k }}{{ v }}
+            {% else %}
+    {{ k }}(
+              {% for kk, vv in v.items() %}
+      {{ kk }}{{ vv }}
+              {% endfor %}
+    )
+            {% endif %}
+          {% endfor %}
+  );
       {% else %}
   {{ k | replace('_', '-') }}({{ '%s' | format(v) if v else '' }});
       {% endif %}

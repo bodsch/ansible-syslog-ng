@@ -28,7 +28,22 @@ destination d_{{ k }}  {
     {% endif %}
   {% if _net_type in ["udp", "tcp"] %}
   {{ _net_type }}(
-    {{ _net | syslog_network_definition("destination") }}
+    {% set network_definition = _net | syslog_network_definition("destination") %}
+    {% for k, v in network_definition.items() %}
+      {% if k == "ip" %}
+    {{ v }}
+      {% else %}
+        {% if v | bodsch.core.type != "dict" %}
+    {{ k }}{{ v }}
+        {% else %}
+    {{ k }}(
+          {% for kk, vv in v.items() %}
+      {{ kk }}{{ vv }}
+          {% endfor %}
+    )
+        {% endif %}
+      {% endif %}
+    {% endfor %}
   );
     {% endif %}
   {% endif %}

@@ -151,6 +151,6 @@ def test_open_port(host):
     for i in host.socket.get_listening_sockets():
         print(i)
 
-    assert host.socket(f"udp://0.0.0.0:514").is_listening
-    assert host.socket(f"udp://0.0.0.0:5140").is_listening
+    assert host.socket("udp://0.0.0.0:514").is_listening
+    assert host.socket("udp://0.0.0.0:5140").is_listening
     # assert host.socket(f"unix:///var/lib/syslog-ng/syslog-ng.ctl").is_listening

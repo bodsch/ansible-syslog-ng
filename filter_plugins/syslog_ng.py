@@ -13,6 +13,7 @@ display = Display()
 class FilterModule(object):
     """
     """
+
     def filters(self):
         return {
             'get_service': self.get_service,
@@ -61,7 +62,7 @@ class FilterModule(object):
             )
             log_dirs.append(full_file_name)
 
-        display.vv(f"= result {log_dirs}")
+        display.v(f"= result {log_dirs}")
         return log_dirs
 
     def validate_syslog_destination(self, data):
@@ -72,30 +73,43 @@ class FilterModule(object):
     def syslog_network_definition(self, data, conf_type="source"):
         """
         """
-        result = None
-        if isinstance(data, dict):
-            _list = []
-            network_ip = data.get("ip", None)
-            network_port = data.get("port", None)
-            network_spoof = data.get("spoof_source", None)
-            network_fifo_size = data.get("log_fifo_size", None)
-            if network_ip:
-                if conf_type == "source":
-                    _list.append(f"ip({network_ip})")
-                else:
-                    _list.append(f"\"{network_ip}\"")
-            if network_port:
-                _list.append(f"port({network_port})")
-            if network_spoof:
-                spoof = 'yes' if network_spoof else 'no'
-                _list.append(f"spoof_source({spoof})")
-            if network_fifo_size:
-                _list.append(f"log_fifo_size({network_fifo_size})")
+        # display.v(f"syslog_network_definition({data}, {conf_type})")
 
-            result = " ".join(_list)
+        def boolean(value):
+            return 'yes' if value else 'no'
+
+        def string(value):
+            return f"\"{value}\""
+
+        res = {}
+        if isinstance(data, dict):
+
+            for key, value in data.items():
+                if key == "ip":
+                    if conf_type == "source":
+                        res = dict(
+                            ip=f"({value})"
+                        )
+                    else:
+                        res = dict(
+                            ip=f"\"{value}\""
+                        )
+                else:
+                    if isinstance(value, bool):
+                        value = f"({boolean(value)})"
+                    elif isinstance(value, str):
+                        value = f"({string(value)})"
+                    elif isinstance(value, int):
+                        value = f"({value})"
+                    elif isinstance(value, dict):
+                        value = self.syslog_network_definition(value, conf_type)
+
+                    res.update({
+                        key: value
+                    })
 
         if isinstance(data, str):
-            result = data
+            res = data
 
-        display.vv(f"= result {result}")
-        return result
+        # display.v(f"= res {res}")
+        return res
