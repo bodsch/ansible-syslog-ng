@@ -115,3 +115,4 @@ def test_open_port(host):
 
     assert host.socket("udp://0.0.0.0:514").is_listening
     assert host.socket("tcp://10.19.0.10:5140").is_listening
+    assert host.socket("udp://10.19.0.10:5140").is_listening

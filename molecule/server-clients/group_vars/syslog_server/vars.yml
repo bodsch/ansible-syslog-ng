@@ -7,28 +7,40 @@ syslog_logs:
       filter: program(ansible)
   remote:
     source: net
-    template: nginx
-    file_name: "remote/nginx/${HOST}/${YEAR}.${MONTH}.${DAY}/messages.log"
-  remote_foo:
-    source: net
     file_name: "remote/${HOST}/message"
     filter:
       filter:
         - not host("localhost")
-  separatedbyhosts:
-    source: s_remote
-    file_name: "remote/$HOST/$YEAR-$MONTH-$DAY/messages"
-    flags:
-      - fallback
+  remote_udp:
+    source: s_remote_udp
+    template: nginx
+    file_name: "remote/nginx-udp/${HOST}/${YEAR}.${MONTH}.${DAY}/messages.log"
+  remote_tcp:
+    source: s_remote_tcp
+    template: nginx
+    file_name: "remote/nginx-tcp/${HOST}/${YEAR}.${MONTH}.${DAY}/messages.log"
+  # remote_tls:
+  #   source: source_6514_tls
+  #   file_name: "remote/$HOST/$YEAR-$MONTH-$DAY/messages.log"
+  #   flags:
+  #     - fallback
 
 syslog_sources:
   net:
-    - comment: network
+    - comment: default network source on port 514
       udp:
+        ip: 0.0.0.0
+        port: 514
 
-  s_remote:
-    - comment: remote sources on port 5140
+  s_remote_tcp:
+    - comment: remote sources on port 5140 TCP
       tcp:
+        ip: 10.19.0.10
+        port: 5140
+
+  s_remote_udp:
+    - comment: remote sources on port 5140 UDP
+      udp:
         ip: 10.19.0.10
         port: 5140
 
