@@ -182,7 +182,9 @@ syslog_sources:
       tcp:
         ip: 0.0.0.0
         port: 5140
-      udp: 'ip(0.0.0.0) port(5140)'      
+      udp: 
+        ip: 0.0.0.0
+        port: 5140
 ```
 
 

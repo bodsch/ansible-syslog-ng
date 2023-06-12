@@ -48,12 +48,12 @@ syslog_logs:
       filter:
         - not host("localhost")
   separatedbyhosts:
-    source: s_remote
+    source: s_remote_tcp
     file_name: "remote/$HOST/$YEAR-$MONTH-$DAY/messages"
     flags:
       - fallback
   loghost:
-    source: s_remote
+    source: s_remote_udp
     destination:
       udp:
         ip: "10.10.0.1"
@@ -69,9 +69,14 @@ syslog_sources:
     - comment: network
       udp:
 
-  s_remote:
+  s_remote_tcp:
     - comment: remote sources on port 5140
       tcp:
         ip: 0.0.0.0
         port: 5140
-      udp: 'ip(0.0.0.0) port(5140)'
+
+  s_remote_udp:
+    - comment: remote sources on port 5140
+      udp:
+        ip: 0.0.0.0
+        port: 5140

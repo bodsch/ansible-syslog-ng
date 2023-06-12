@@ -40,7 +40,8 @@
     src: "conf.d/{{ item }}.j2"
     dest: "/etc/syslog-ng/conf.d/{{ item }}"
     mode: 0644
-  notify: restart syslog-ng
+  notify:
+    - restart syslog-ng
   loop:
     - sources.conf
     - destinations.conf
@@ -56,7 +57,9 @@
     dest: /etc/syslog-ng/syslog-ng.conf
     mode: 0644
     backup: true
-  notify: restart syslog-ng
+  notify:
+    - validate syslog-ng config
+    - restart syslog-ng
   tags:
     - syslog-ng
     - configuration
