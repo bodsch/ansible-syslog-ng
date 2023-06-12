@@ -1,5 +1,5 @@
 ---
-name: syslog-ng with custom config
+name: syslog-ng with network config
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
         ansible-version:
           - '6.7'
         scenario:
-          - configured
+          - server-clients
 
     steps:
       - name: check out the codebase.

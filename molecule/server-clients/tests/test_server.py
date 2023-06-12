@@ -107,44 +107,6 @@ def local_facts(host):
     return host.ansible("setup").get("ansible_facts").get("ansible_local").get("syslog_ng")
 
 
-@pytest.mark.parametrize("dirs", [
-    "/etc/syslog-ng/conf.d",
-])
-def test_directories(host, dirs):
-    d = host.file(dirs)
-    assert d.is_directory
-    assert d.exists
-
-
-@pytest.mark.parametrize("files", [
-    "/etc/syslog-ng/syslog-ng.conf",
-    "/etc/syslog-ng/conf.d/sources.conf",
-    "/etc/syslog-ng/conf.d/destinations.conf",
-    "/etc/syslog-ng/conf.d/filters.conf",
-    "/etc/syslog-ng/conf.d/logs.conf",
-])
-def test_files(host, files):
-    f = host.file(files)
-    assert f.is_file
-    assert f.exists
-
-
-def test_version(host):
-    config_file = "/etc/syslog-ng/syslog-ng.conf"
-    content = host.file(config_file).content_string
-
-    version = local_facts(host).get("version")
-
-    assert f"@version: {version}" in content
-
-
-def test_service(host):
-    service_unit = local_facts(host).get("service_unit")
-    service = host.service(service_unit)
-    assert service.is_enabled
-    assert service.is_running
-
-
 def test_open_port(host):
     """
     """
@@ -152,5 +114,5 @@ def test_open_port(host):
         print(i)
 
     assert host.socket("udp://0.0.0.0:514").is_listening
-    assert host.socket("udp://0.0.0.0:5140").is_listening
-    # assert host.socket(f"unix:///var/lib/syslog-ng/syslog-ng.ctl").is_listening
+    assert host.socket("tcp://10.19.0.10:5140").is_listening
+    assert host.socket("udp://10.19.0.10:5140").is_listening

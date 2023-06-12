@@ -24,7 +24,7 @@ jobs:
           - archlinux:latest
           - artixlinux:latest
         ansible-version:
-          - '6.1'
+          - '6.7'
         scenario:
           - default
 
@@ -68,7 +68,7 @@ jobs:
           - debian:11
           - ubuntu:20.04
         ansible-version:
-          - '6.1'
+          - '6.7'
         scenario:
           - default
 
@@ -77,6 +77,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: 'ansible-syslog-ng'
+          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
         uses: actions/setup-python@v4

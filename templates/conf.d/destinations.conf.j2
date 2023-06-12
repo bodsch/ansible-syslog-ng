@@ -26,9 +26,32 @@ destination d_{{ k }}  {
       {% set _net = v.destination.tcp %}
       {% set _net_type = "tcp" %}
     {% endif %}
-  {% if _net_type in ["udp", "tcp"] %}
+    {% if v.destination.network is defined and v.destination.network | bodsch.core.type == "dict" and v.destination.network | count > 0 %}
+      {% set _net = v.destination.network %}
+      {% set _net_type = "network" %}
+    {% endif %}
+    {% if v.destination.syslog is defined and v.destination.syslog | bodsch.core.type == "dict" and v.destination.syslog | count > 0 %}
+      {% set _net = v.destination.syslog %}
+      {% set _net_type = "syslog" %}
+    {% endif %}
+  {% if _net_type in ["udp", "tcp", "network", "syslog"] %}
   {{ _net_type }}(
-    {{ _net | syslog_network_definition("destination") }}
+    {% set network_definition = _net | syslog_network_definition("destination") %}
+    {% for k, v in network_definition.items() %}
+      {% if k == "ip" %}
+    {{ v }}
+      {% else %}
+        {% if v | bodsch.core.type != "dict" %}
+    {{ k }}{{ v }}
+        {% else %}
+    {{ k }}(
+          {% for kk, vv in v.items() %}
+      {{ kk }}{{ vv }}
+          {% endfor %}
+    )
+        {% endif %}
+      {% endif %}
+    {% endfor %}
   );
     {% endif %}
   {% endif %}
