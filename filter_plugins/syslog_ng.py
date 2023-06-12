@@ -29,13 +29,13 @@ class FilterModule(object):
 
         match = {k: v for k, v in data.items() if re.match(regex_list_compiled, k)}
 
-        display.vv(f"found: {match}  {type(match)}")
+        # display.vv(f"found: {match}  {type(match)}")
 
         if isinstance(match, dict):
             values = list(match.values())[0]
             name = values.get('name', search_for).replace('.service', '')
 
-        display.vv(f"= result {name}")
+        # display.vv(f"= result {name}")
         return name
 
     def log_directories(self, data, base_directory):
@@ -62,7 +62,7 @@ class FilterModule(object):
             )
             log_dirs.append(full_file_name)
 
-        display.v(f"= result {log_dirs}")
+        # display.v(f"= result {log_dirs}")
         return log_dirs
 
     def validate_syslog_destination(self, data):
@@ -75,11 +75,14 @@ class FilterModule(object):
         """
         # display.v(f"syslog_network_definition({data}, {conf_type})")
 
-        def boolean(value):
+        def as_boolean(value):
             return 'yes' if value else 'no'
 
-        def string(value):
+        def as_string(value):
             return f"\"{value}\""
+
+        def as_list(value):
+            return ", ".join(value)
 
         res = {}
         if isinstance(data, dict):
@@ -96,11 +99,13 @@ class FilterModule(object):
                         )
                 else:
                     if isinstance(value, bool):
-                        value = f"({boolean(value)})"
+                        value = f"({as_boolean(value)})"
                     elif isinstance(value, str):
-                        value = f"({string(value)})"
+                        value = f"({as_string(value)})"
                     elif isinstance(value, int):
                         value = f"({value})"
+                    elif isinstance(value, list):
+                        value = f"({as_list(value)})"
                     elif isinstance(value, dict):
                         value = self.syslog_network_definition(value, conf_type)
 

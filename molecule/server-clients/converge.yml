@@ -1,7 +1,15 @@
 ---
 
-- name: converge
+- name: converge syslog-ng server
   hosts: instance
+  any_errors_fatal: false
+  become: false
+
+  roles:
+    - role: ansible-syslog-ng
+
+- name: converge syslog-ng client
+  hosts: client
   any_errors_fatal: false
   become: false
 

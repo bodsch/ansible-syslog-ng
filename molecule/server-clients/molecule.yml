@@ -27,6 +27,37 @@ platforms:
     tmpfs:
       - /run
       - /tmp
+    groups:
+      - syslog
+    docker_networks:
+      - name: syslog
+        ipam_config:
+          - subnet: "10.19.0.0/24"
+            gateway: "10.19.0.2"
+    networks:
+      - name: syslog
+        ipv4_address: "10.19.0.10"
+
+  - name: client
+    image: "bodsch/ansible-${DISTRIBUTION:-debian:11}"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    pre_build_image: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    groups:
+      - syslog
+    networks:
+      - name: syslog
+        ipv4_address: "10.19.0.21"
 
 provisioner:
   name: ansible

@@ -13,7 +13,7 @@ source {{ id }} {
     {% for k, v in dic.items() %}
       {% if k == "file" %}
   {{ k | replace('_', '-') }}({{ '"%s"' | format(v) if v else '' }});
-      {% elif k in ["udp", "tcp", "network"] %}
+      {% elif k in ["udp", "tcp", "network", "syslog"] %}
         {% set _net = v %}
         {% set _net_type = k %}
   {{ _net_type }}(
