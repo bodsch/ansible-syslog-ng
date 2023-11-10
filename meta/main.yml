@@ -6,7 +6,7 @@ galaxy_info:
   description: Manage syslog-ng configuration
   license: Apache
 
-  min_ansible_version: "2.10"
+  min_ansible_version: "2.9"
   platforms:
     - name: ArchLinux
     - name: Debian
@@ -14,6 +14,7 @@ galaxy_info:
         # 10
         - buster
         - bullseye
+        - bookworm
     - name: Ubuntu
       versions:
         # 20.04
