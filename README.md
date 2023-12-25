@@ -8,6 +8,13 @@ This again allows a simple, central logging service to be run on the user's own 
 
 **This role disables journald and takes over its function!**
 
+---
+
+> Further development of this Ansible role has been moved to Collection [bodsch.core](https://github.com/bodsch/ansible-collection-core).
+> **This repository will therefore no longer be actively maintained.**
+
+---
+
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-syslog-ng/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-syslog-ng)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-syslog-ng)][releases]
